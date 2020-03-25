@@ -4,13 +4,13 @@
 
 ## Usage: run.dipspades.sh -s <samples.txt> -r <readpairsdir> -t <threads>
 
+## Needs
+# submit-commands-var.pl
+
 ## Arguments:
 # -s sample file (will look for extracted reads inside ${sample}.targets)
 # -r absolute path to extracted read pairs
 # -t number of threads: the parallelization is over reference sequences, not over individuals (these are assembled one after the other)
-
-## Needs
-# submit-commands-var.pl
 
 ## Define arguments
 while getopts s:r:t: opts
@@ -29,8 +29,7 @@ done
 if [ ! $sfile ] ; then echo "sample file (-s option) not specified, stopping" ; exit 0 ; fi
 if [ ! -f $sfile ] ; then echo "sample file <$sfile> not found, stopping" ; exit 0 ; fi
 if [ ! $readpairsdir ] ; then echo "absolute path to extracted read pairs (-r option) not specified, stopping." ; exit 0 ; fi
-if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, using -t 15." ; threads=15 ; fi
-if [ "$threads" -gt 30 ] ; then echo "number of threads (-t option) must be between 1 and 30, setting -t 15." ; threads=15 ; fi
+if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, setting to -t 4." ; threads=4 ; fi
 
 
 ## Create results directory
