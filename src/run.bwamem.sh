@@ -6,6 +6,8 @@
 ## USAGE: 
 # run.bwamem.sh -s <samples.txt> -r <file> -e <string(s) separated by ','> -T <positive integer> -Q <positive integer> -d <path> -t <positive integer>
 
+## Needs: samtools, bwa mem
+
 ## DETAILS:
 #   sample file (-s option) must contain the basenames of all samples to be mapped (basenames = filenames without file extensions, might be 'SH598_S16_L001')
 #   sample file extensions (-e option) of files 'SH598_S16_L001.trim1.fastq.gz' and 'SH598_S16_L001.trim2.fastq.gz' might be '.trim1.fastq.gz,.trim2.fastq.gz'
@@ -19,8 +21,7 @@
 # -T [10]  bwa mem -T mapping quality parameter [quality of .mapped.sorted.bam output]
 # -Q [20]  high-quality portion mapping parameter, must be >= -T. Defines the portion of reads considered to have mapped with high quality [quality of .mapped.Q${Q}.sorted.bam]
 # -d [pwd] /path/to/samples
-# -t [3]   number of samples processed in parallel. Can be between 1 (uses 5 CPU cores in total) and 4 (uses 20 CPU cores in total)
-
+# -t [1]   number of samples processed in parallel. Can be between 1 (uses 4 CPU cores in total) and 5 (uses 20 CPU cores in total)
 
 ## OUTPUT: folders <sample> containing .bam, .mapped.sorted.bam(.bai), .mapped.Q${Q}.sorted.bam(.bai), .mapped.sorted.Q${Q}.bam.html, .flagstats and .log files 
 
@@ -64,8 +65,8 @@ if [ ! -f $sfile ] ; then echo "sample file <$sfile> not found, stopping." ; exi
 if [ ! $ref ] ; then echo "reference fasta file not specified (-r option), stopping." ; exit 0 ; fi
 if [[ $refext = "fasta" ]] ; then echo "" ; else echo " reference fasta file (-r option) does not have .fasta extension, stopping." ; exit 0 ; fi
 if [[ $refchr = ">" ]] ; then echo "" ; else echo "reference fasta (-r option) seems not to be in .fasta format, stopping." ; exit 0 ; fi
-if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, using -t 3." ; threads=3 ; fi
-if [ "$threads" -gt 6 ] ; then echo "number of threads (-t option) must be between 1 (uses 5 CPU cores in total) and 6 (uses 30 CPU cores in total), setting -t 3." ; threads=3 ; fi
+if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, using -t 1." ; threads=1 ; fi
+if [ "$threads" -gt 10 ] ; then echo "number of threads (-t option) must be between 1 (uses 4 CPU cores in total) and 10 (uses 40 CPU cores in total), setting -t 1." ; threads=1 ; fi
 if [ ! $qual ] ; then echo "BWA MEM quality parameter (-T option) not specified, using -T 10." ; qual=10 ; fi
 if [ ! $Q ] ; then echo "mapping quality parameter (-Q option) not specified, using -Q 20." ; Q=20 ; fi
 if [ ! $ext ] ; then echo "sample file extensions (-e option) not specified, stopping." ; exit 0 ; fi
@@ -136,8 +137,6 @@ fi
 for d in `cat ${sfile}`
 do 
 	sample=`basename $d`
-	#echo "${sample}.on.${refname}.bwa" >> tmp.folderlist
-	#if [ -e ${sample}.on.${refname}.bwa ] ; then echo "stop" >> tmp.check ; fi
 	echo "${sample}" >> tmp.folderlist
 	if [ -e ${sample} ] ; then echo "stop" >> tmp.check ; fi
 done
@@ -256,12 +255,12 @@ doMapping() {
 	if [ $mode = 'paired' ]
 	then
 	
-		bwa mem -t 5 -M -T $qual -R "@RG\tID:$sample\tSM:$sample" $ref ${sample}${ext1} ${sample}${ext2} > ${sample}.bwa-mem.sam 2> ${sample}.bwa-mem.log
+		bwa mem -t 4 -M -T $qual -R "@RG\tID:$sample\tSM:$sample" $ref ${sample}${ext1} ${sample}${ext2} > ${sample}.bwa-mem.sam 2> ${sample}.bwa-mem.log
 	
 	elif [ $mode = 'unpaired' ]
 	then
 		
-		bwa mem -t 5 -M -T $qual -R "@RG\tID:$sample\tSM:$sample" $ref ${sample}${ext1} > ${sample}.bwa-mem.sam 2> ${sample}.bwa-mem.log
+		bwa mem -t 4 -M -T $qual -R "@RG\tID:$sample\tSM:$sample" $ref ${sample}${ext1} > ${sample}.bwa-mem.sam 2> ${sample}.bwa-mem.log
 			
 	fi
 		
@@ -304,7 +303,6 @@ doMapping() {
 	/bin/rm -f ${sample}.bwa-mem.sam         
 	/bin/rm -f ${sample}.bwa-mem.mapped.sam  
 	/bin/rm -f ${sample}.bwa-mem.mapped.Q${Q}.sam 
-	#/bin/rm -f ${sample}.bwa-mem.bam
         
 	## Sample Finish Time
 	echo "Finish time:                  $(zdump MEC)" >> bwa.log
@@ -333,11 +331,10 @@ export -f doMapping
 echo
 echo "Start mapping..."
 echo
-cat ${sfile} | /usr/local/bin/parallel -j $threads doMapping
+cat ${sfile} | parallel -j $threads doMapping
 
 
 ## Finish
 echo 
 echo "All samples processed."
 echo
-
