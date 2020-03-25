@@ -2,7 +2,9 @@
 
 ## Usage: get.coverage.stats.sh -s <samples.txt> -Q <mapping quality> -t <threads>
 
-## Needs: extract-samtools-mapping.stats.sh, coverage.calc.pl
+## Needs: get.coverage.stats.R
+
+## Authors: Simon Crameri (ETHZ), Stefan Zoller (GDC)
 
 ## Define arguments
 while getopts s:Q:t: opts
@@ -18,9 +20,8 @@ done
 ## Check arguments
 if [ ! $sfile ] ; then echo "sample file (-s option) not provided, stopping" ; exit 0 ; fi
 if [ ! -f $sfile ] ; then echo "sample file <$sfile> not found, stopping" ; exit 0 ; fi
-if [ ! $mapQ ] ; then echo "mapping quality threshold (-Q option) not specified (in .bam filename), stopping" ; exit 0 ; fi
-if [ ! $threads ] ; then echo "number of threads (-t option) not specified, setting to 8" ; threads=8 ; fi
-if [ $threads -gt 30 ] ; then echo "number of threads must not exceed 30, stopping." ; exit 0 ; fi
+if [ ! $mapQ ] ; then echo "mapping quality threshold (-Q option) not specified (used to point to the correct .bam file), setting to -Q 10" ; mapQ=10 ; fi
+if [ ! $threads ] ; then echo "number of threads (-t option) not specified, setting to -t 4." ; threads=4 ; fi
 
 
 ## Collect mapping stats
@@ -34,7 +35,11 @@ echo "collecting mapping stats..." ; echo
 echo -e "file-name\ttotal-reads\tproperly-paired\tsingletons\t%properly-paired" > mapping.stats.txt
 for sample in $(cat $sfile)
 do
-	extract-samtools-mapping-stats.sh ${sample}/${sample}.bwa-mem.mapped.Q${mapQ}.flagstats >> mapping.stats.txt
+	flagstats=${sample}/${sample}.bwa-mem.mapped.Q${mapQ}.flagstats
+	
+	echo -en "${flagstats}\t"
+	cat ${flagstats} | grep -P "in total|properly paired|singletons" | cut -f1 -d "+" |perl -p -e  "s/\\n/\\t/" | awk '{print $1 "\t" $2 "\t" $3 "\t" $2/$1*100}' >> mapping.stats.txt
+	
 done
 
 
