@@ -1,2 +1,21 @@
 # CaptureAl
-Pipeline streamlining analysis of target enrichment sequencing data
+Pipeline streamlining analysis of **target enrichment** sequencing data
+
+
+# Tutorial using toy dataset
+
+### STEP 1: READ MAPPING
+
+### STEP 2: SEQUENCE ASSEMBLY
+
+### STEP 3: ORTHOLOGY ASSESSMENT
+
+### STEP 4: SAMPLE AND LOCUS FILTERING
+
+### STEP 5: TARGET LOCUS ALIGNMENT AND ALIGNMENT TRIMMING
+
+### STEP 6: MERGE OVERLAPPING ALIGNMENTS
+
+### STEP 7: CREATE REPRESENTATIVE REFERENCE SEQUENCES
+
+### STEP 8: ALIGNMENT ASSESSMENT AND FILTERING
