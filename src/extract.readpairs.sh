@@ -1,12 +1,16 @@
 #!/bin/bash
 
-# best to start this from a local scratch
-
 ## Usage: extract.readpairs.sh -q <qualfiltereddir> -m <mappingdir> -Q <mapping quality threshold> -t <threads>
 
 # -q absolute path to folder with quality-filtered reads
 # -m absolute path to folder with mapping dirs
 # -t number of threads used
+
+## Needs: samtools, extract-reads-from-fastq.pl
+
+## Authors: Simon Crameri (ETHZ), Stefan Zoller (GDC)
+
+## NOTE: best to start this from a local scratch
 
 ## Define arguments
 while getopts q:m:Q:t: opts
@@ -23,9 +27,8 @@ done
 ## Check arguments
 if [ ! $qualfiltereddir ] ; then echo "absolute path to quality-filtered reads (-q option) required, stopping." ; exit 0 ; fi
 if [ ! $mappingdir ] ; then echo "absolute path to mapped reads (-m option) required, stopping." ; exit 0 ; fi
-if [ ! $Q ] ; then echo "mapping quality parameter (-Q option) not set, assuming Q = 10" ; Q=10 ; fi
-if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, using -t 15." ; threads=15 ; fi
-if [ "$threads" -gt 30 ] ; then echo "number of threads (-t option) must be between 1 and 30, setting -t 15." ; threads=15 ; fi
+if [ ! $Q ] ; then echo "mapping quality parameter (-Q option) not set, setting to Q = 10." ; Q=10 ; fi
+if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, setting to -t 4." ; threads=4 ; fi
 
 ## Create target directory
 results=$(basename $mappingdir)
@@ -53,7 +56,6 @@ echo "Number of threads used:       ${threads}" >> doExtract.log
 ## Define the function
 doExtract()
 { 
-	# module load gcc/4.8.2 gdc samtools # only used on euler 
 	sample=$1
 	echo "sample: $sample"
 	
@@ -81,10 +83,10 @@ doExtract()
 	
 		
 	# extract reads:  needs mem=80000
-	~/tools/extract-reads-from-fastq.pl -f ${sample}.trim1.fastq -r ${sample}.readID.files > ../logs/${sample}.extract.reads.log 2> ../logs/${sample}.extract.reads.err
-	~/tools/extract-reads-from-fastq.pl -f ${sample}.trim2.fastq -r ${sample}.readID.files > ../logs/${sample}.extract.reads.log 2> ../logs/${sample}.extract.reads.err
+	extract-reads-from-fastq.pl -f ${sample}.trim1.fastq -r ${sample}.readID.files > ../logs/${sample}.extract.reads.log 2> ../logs/${sample}.extract.reads.err
+	extract-reads-from-fastq.pl -f ${sample}.trim2.fastq -r ${sample}.readID.files > ../logs/${sample}.extract.reads.log 2> ../logs/${sample}.extract.reads.err
 
-    cd .. # return to /data/local/work/scrameri/Dalbergia/uce/doExtract/${results} folder
+    cd ..
 }
 
 export qualfiltereddir=$qualfiltereddir
@@ -103,4 +105,4 @@ echo " " >> doExtract.log
 echo ""
 echo "All samples processed."
 
-cd ../ # return to /data/local/work/scrameri/Dalbergia/uce/doExtract folder
+cd ../ 
