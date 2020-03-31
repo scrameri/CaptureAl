@@ -26,6 +26,7 @@ collect.coverage.stats.R samples.txt 20
 #### visualize and filter regions based on coverage statistics
 This generates a heatmap and violin plots of the coverage analysis results. The visual output can be used to update the selection of adequate filtering thresholds. The ```mapfile.txt``` can be a file with a header and single column with sample base names, or it can contain a second column with group memberships. Group memberships are used to filter loci in each group separately, and to determine the overlap of remaining loci ```loci.txt```.
 ```
+# Filtering thresholds
 minploci=0.2 # min. proportion of regions recovered per sample (filters taxa)
 minptaxa=0.4 # min. proportion of samples recovered per region (filters loci)
 minlen=1     # minimum mapped length in .bam (filters loci)
@@ -34,6 +35,7 @@ maxcov=1000  # maximum average coverage in .bam (filters loci)
 minratio=0   # minimum target alignment fraction (alignment length / target length) (filters loci)
 minfrac=0.4  # minimum fraction of samples conforming to the absolute locus filters (minlen, mincov, maxcov, minratio)
 
+# Visualize coverage analysis and filter loci
 filter.visual.coverages.R mapfile.txt coverage_stats.txt reference.fasta ${minploci} ${minptaxa} ${minlen} ${mincov} ${maxcov} ${minratio} ${minfrac}
 ````
 
