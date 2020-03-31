@@ -45,7 +45,7 @@ This extracts .fastq read pairs located in ```/path/to/reads``` for samples in `
 
 NOTE: This script should ideally be executed on a local scratch, since many files are read and written, which is why the ```-m``` option can be used to redirect back to the working directory used in step 1.
 ```
-extract.readpairs.sh -s samples.txt -r loci.txt -q path/to/reads/ -m path/to/mapping/ -Q 20 -t 4
+extract.readpairs.sh -s samples.txt -r loci.txt -d path/to/reads/ -m path/to/mapping/ -Q 20 -t 4
 ```
 This assembles reads in ```/path/to/extracted-reads/``` separately for each locus in ```loci.txt``` and each sample in ```samples.txt```, using 4 threads in parallel.
 
