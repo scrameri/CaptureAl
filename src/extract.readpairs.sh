@@ -68,7 +68,7 @@ doExtract()
 { 
 	# module load gcc/4.8.2 gdc samtools # only used on euler 
 	sample=$1
-	echo "sample: $sample"
+	echo $sample
 	
 	
 	# create subdirectory for each sample
