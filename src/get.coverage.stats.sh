@@ -2,9 +2,7 @@
 
 ## Usage: get.coverage.stats.sh -s <samples.txt> -Q <mapping quality> -t <threads>
 
-## Needs: get.coverage.stats.R
-
-## Authors: Simon Crameri (ETHZ), Stefan Zoller (GDC)
+## Needs: get.coverage.stats.R, samtools
 
 ## Define arguments
 while getopts s:Q:t: opts
@@ -20,8 +18,9 @@ done
 ## Check arguments
 if [ ! $sfile ] ; then echo "sample file (-s option) not provided, stopping" ; exit 0 ; fi
 if [ ! -f $sfile ] ; then echo "sample file <$sfile> not found, stopping" ; exit 0 ; fi
-if [ ! $mapQ ] ; then echo "mapping quality threshold (-Q option) not specified (used to point to the correct .bam file), setting to -Q 10" ; mapQ=10 ; fi
-if [ ! $threads ] ; then echo "number of threads (-t option) not specified, setting to -t 4." ; threads=4 ; fi
+if [ ! $mapQ ] ; then echo "mapping quality threshold (-Q option) not specified (in .bam filename), stopping" ; exit 0 ; fi
+if [ ! $threads ] ; then echo "number of threads (-t option) not specified, setting to 8" ; threads=8 ; fi
+if [ $threads -gt 30 ] ; then echo "number of threads must not exceed 30, stopping." ; exit 0 ; fi
 
 
 ## Collect mapping stats
@@ -31,17 +30,33 @@ then
 	mv mapping.stats.txt mapping.stats.txt.bak
 fi
 
-echo "collecting mapping stats..." ; echo
-echo -e "file-name\ttotal-reads\tproperly-paired\tsingletons\t%properly-paired" > mapping.stats.txt
-for sample in $(cat $sfile)
-do
-	flagstats=${sample}/${sample}.bwa-mem.mapped.Q${mapQ}.flagstats
+echo "\ncollecting mapping stats..." ; echo
+echo -e "sample\tread-ids\ttotal-reads\tproperly-paired\tsingletons\t%properly-paired" > mapping.stats.txt
+mkdir mapping.stats.tmp
+getMappingStats() {
+	sample=$1
+	echo $sample
+	bamfile="${sample}/${sample}.bwa-mem.mapped.Q${mapQ}.sorted.bam"
+	flagstats="${sample}/${sample}.bwa-mem.mapped.Q${mapQ}.flagstats"
 	
-	echo -en "${flagstats}\t"
-	cat ${flagstats} | grep -P "in total|properly paired|singletons" | cut -f1 -d "+" |perl -p -e  "s/\\n/\\t/" | awk '{print $1 "\t" $2 "\t" $3 "\t" $2/$1*100}' >> mapping.stats.txt
+	echo -en "$sample\t"  >> mapping.stats.tmp/${sample}.tmp
 	
-done
+	# from samtools view: get number of unique read IDs (pairs + singletons)
+	samtools view ${bamfile} | cut -f1 | sort | uniq | wc -l | tr "\n" "\t" >> mapping.stats.tmp/${sample}.tmp
+	
+	# from flagstats: get number of mapped reads (fwd + rev)
+	# samtools view ${bamfile} | cut -f1 | wc -l | tr "\n" "\t" >> mapping.stats.tmp/${sample}.tmp	
+	cat ${flagstats} | grep -P "in total|properly paired|singletons" | cut -f1 -d "+" | tr "\n" "\t" | awk '{print $1 "\t" $2 "\t" $3 "\t" $2/$1*100}'  >> mapping.stats.tmp/${sample}.tmp
+	
+}
+export mapQ=${mapQ}
+export -f getMappingStats
+cat ${sfile} | parallel -j ${threads} getMappingStats
 
+
+# collect
+cat mapping.stats.tmp/*tmp >> mapping.stats.txt
+rm -r mapping.stats.tmp
 
 ## Calculating coverages
 doCovcalc() {
@@ -59,7 +74,7 @@ doCovcalc() {
 }
 export mapQ=${mapQ}
 export -f doCovcalc
-echo "calculating coverages..." ; echo
+echo "\ncalculating coverages..." ; echo
 cat ${sfile} | parallel -j ${threads} doCovcalc
 
 
@@ -75,13 +90,13 @@ doCount() {
 	
 	for i in 1 2 3 4 5 6 7 8 9 10 15 20 30 40 50 100 200 300 400 500 600 700 800 900 1000 10000
 	do 
-		echo -n -e  "$i\t" >> ${ofile}
+		echo -n -e  "coverage >= $i\t" >> ${ofile}
 		cat ${ifile} | tail -n +2 | awk '{if($4 >='$i' ) print $0}' |wc -l >> ${ofile}
 	done
 	cd ..
 }
 export -f doCount
-echo ; echo "calculating coverages above thresholds..." ; echo
+echo "\ncalculating coverages above thresholds..." ; echo
 cat ${sfile} | parallel -j ${threads} doCount
 
 
@@ -92,7 +107,7 @@ then
 	mv coverage.stats.txt coverage.stats.txt.bak
 fi
 
-echo "collecting coverage stats..." ; echo
+echo "\ncollecting coverage stats..." ; echo
 echo -ne "sample\t1\t10\t20\t30\t40\t50\t100\t200\t300\t400\t500\t1000\n" > coverage.stats.txt
 for sample in  $(cat $sfile)
 do  
@@ -100,12 +115,13 @@ do
 	echo -ne "${sample}\t" >> coverage.stats.txt
 	for c in 1 10 20 30 40 50 100 200 300 400 500 1000 
 	do 
-		grep -w "$c" ${infile} | cut -f2 | tr "\n" "\t"  >> coverage.stats.txt
+		grep -w "coverage >= $c" ${infile} | cut -f2 | tr "\n" "\t"  >> coverage.stats.txt
 	done 
 	echo >> coverage.stats.txt
 done
 
+
 ## Finish
 touch mapping.stats.txt
 touch coverage.stats.txt
-echo "All samples processed" ; echo
+echo ; echo "All samples processed" ; echo

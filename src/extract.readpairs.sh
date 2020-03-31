@@ -1,45 +1,53 @@
 #!/bin/bash
 
-## Usage: extract.readpairs.sh -q <qualfiltereddir> -m <mappingdir> -Q <mapping quality threshold> -t <threads>
+# best to start this from a local scratch
+
+## Usage: extract.readpairs.sh -s <samples> -r <regions to extract reads from> -q <qualfiltereddir> -m <mappingdir> -Q <mapping quality threshold> -t <threads>
+
+## Needs: extract-reads-from-fastq.pl
 
 # -q absolute path to folder with quality-filtered reads
 # -m absolute path to folder with mapping dirs
 # -t number of threads used
 
-## Needs: samtools, extract-reads-from-fastq.pl
-
-## Authors: Simon Crameri (ETHZ), Stefan Zoller (GDC)
-
-## NOTE: best to start this from a local scratch
-
 ## Define arguments
-while getopts q:m:Q:t: opts
+while getopts s:r:q:m:Q:t: opts
 do
         case "${opts}"
         in
+        		s) sfile=${OPTARG};;
+        		r) reg=${OPTARG};;
                 q) qualfiltereddir=${OPTARG};;
                 m) mappingdir=${OPTARG};;
-		Q) Q=${OPTARG};;
+				Q) Q=${OPTARG};;
                 t) threads=${OPTARG};;
     	 esac
 done
 
 ## Check arguments
+if [ ! $sfile ] ; then echo "sample file (-s option) required, stopping." ; exit 0 ; fi
+if [ ! $reg ] ; then echo "region file (-r option) required, stopping." ; exit 0 ; fi
+if [ ! -f $sfile ] ; then echo "sample file <$sfile> not found, stopping." ; exit 0 ; fi
+if [ ! -f $reg ] ; then echo "region file <$reg> not found, stopping." ; exit 0 ; fi
+
 if [ ! $qualfiltereddir ] ; then echo "absolute path to quality-filtered reads (-q option) required, stopping." ; exit 0 ; fi
 if [ ! $mappingdir ] ; then echo "absolute path to mapped reads (-m option) required, stopping." ; exit 0 ; fi
-if [ ! $Q ] ; then echo "mapping quality parameter (-Q option) not set, setting to Q = 10." ; Q=10 ; fi
-if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, setting to -t 4." ; threads=4 ; fi
+if [ ! -d $qualfiltereddir ] ; then echo "folder with quality-filtered reads <$qualfiltereddir> not found, stopping." ; exit 0 ; fi
+if [ ! -d $mappingdir ] ; then echo "folder with mapped reads <$mappingdir> not found, stopping." ; exit 0 ; fi
+
+if [ ! $Q ] ; then echo "mapping quality parameter (-Q option) not set, assuming -Q 10." ; Q=10 ; fi
+if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, using -t 4." ; threads=4 ; fi
+if [ "$threads" -gt 30 ] ; then echo "number of threads (-t option) must be between 1 and 30, setting -t 4." ; threads=4 ; fi
 
 ## Create target directory
 results=$(basename $mappingdir)
 mkdir ${results}
 mkdir ${results}/logs
 
+## Copy regions and samples
+cp ${reg} ${results}/regions
+cp ${sfile} ${results}/samples.txt
 cd ${results}
-
-## Get regions
-grep '^>' ${mappingdir}/*.fasta | cut -d '>' -f2 > regions
-cp ${mappingdir}/samples.txt .
 
 ## Create log file
 echo "=================================================================" > doExtract.log
@@ -47,6 +55,8 @@ echo "========================= doExtract LOG =========================" >> doEx
 echo "=================================================================" >> doExtract.log
 echo " " >> doExtract.log
 echo "Starting time:                $(zdump MEC)" >> doExtract.log
+echo "sample file:                  $sfile" >> doExtract.log
+echo "region file:                  $reg" >> doExtract.log
 echo "quality-filtered reads used:  ${qualfiltereddir}" >> doExtract.log
 echo "mapped reads used:            ${mappingdir}" >> doExtract.log
 echo "quality threshold used: 	    ${Q}" >> doExtract.log 
@@ -56,6 +66,7 @@ echo "Number of threads used:       ${threads}" >> doExtract.log
 ## Define the function
 doExtract()
 { 
+	# module load gcc/4.8.2 gdc samtools # only used on euler 
 	sample=$1
 	echo "sample: $sample"
 	
@@ -68,7 +79,7 @@ doExtract()
 	# extract mapped reads from .bam file, grep the header (machine-specific grepping!),
 	# cut the first part of the header, and add a @ at the beginning using a RegExpr
 	# The @ ensures that the header is identical to the one used in the fastq file
-	for region in `cat ../regions`
+	for region in $(cat ../regions)
     	do
 		samtools view ${mappingdir}/${sample}/${sample}.bwa-mem.mapped.Q${Q}.sorted.bam "$region" |cut -f1 |awk '{print "@"$0}' |sort |uniq > ${region}.ids
 	done
@@ -105,4 +116,4 @@ echo " " >> doExtract.log
 echo ""
 echo "All samples processed."
 
-cd ../ 
+cd ../

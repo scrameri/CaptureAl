@@ -101,11 +101,11 @@ logtxt <- paste0("coverage_stats-", suffix, ".log")  # output .log
 write.outtxt1 = FALSE                                # if TRUE, will write merged alignment stats
 
 # variables expected in <stat>
-regvar <- "region"               # variable name in <stat> denoting <region id>
-linref <- "length.in.refseq"     # variable name in <stat> denoting <length of reference sequence>
-linbam <- "length.in.bam"        # variable name in <stat> denoting <length of mapped region>
-cinref <- "avg.coverage.refseq"  # variable name in <stat> denoting <average coverage of reference sequence>
-cinbam <- "avg.coverage.bam"     # variable name in <stat> denoting <average coverage of mapped region>
+regvar <- "region"              # variable name in <stat> denoting <region id>
+linref <- "linref"              # variable name in <stat> denoting <length of reference sequence>
+linbam <- "linbam"              # variable name in <stat> denoting <length of mapped region>
+cinref <- "cinref"              # variable name in <stat> denoting <average coverage of reference sequence>
+cinbam <- "cinbam"              # variable name in <stat> denoting <average coverage of mapped region>
 
 # variables created in merged data.frame
 idvar <- "ID"                   # variable name denoting <sample ID>
