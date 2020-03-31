@@ -47,10 +47,11 @@ NOTE: This script should ideally be executed on a local scratch, since many file
 ```
 extract.readpairs.sh -s samples.txt -r loci.txt -d path/to/reads/ -m path/to/mapping/ -Q 20 -t 4
 ```
+
 This assembles reads in ```/path/to/extracted-reads/``` separately for each locus in ```loci.txt``` and each sample in ```samples.txt```, using 4 threads in parallel.
-
+```
 run.dipspades.sh -s samples.txt -r /path/to/extracted-reads/ -t 4
-
+```
 
 ### STEP 3: ORTHOLOGY ASSESSMENT
 
