@@ -2,22 +2,25 @@
 
 # best to start this from a local scratch
 
-## Usage: extract.readpairs.sh -s <samples> -r <regions to extract reads from> -q <qualfiltereddir> -m <mappingdir> -Q <mapping quality threshold> -t <threads>
+## Usage: extract.readpairs.sh -s <samples> -r <regions to extract reads from> -d <qualfiltereddir> -m <mappingdir> -Q <mapping quality threshold> -t <threads>
 
 ## Needs: extract-reads-from-fastq.pl
 
-# -q absolute path to folder with quality-filtered reads
+# -s sample file
+# -r locus file
+# -d absolute path to folder with quality-filtered reads
 # -m absolute path to folder with mapping dirs
+# -Q mapping quality
 # -t number of threads used
 
 ## Define arguments
-while getopts s:r:q:m:Q:t: opts
+while getopts s:r:d:m:Q:t: opts
 do
         case "${opts}"
         in
         		s) sfile=${OPTARG};;
         		r) reg=${OPTARG};;
-                q) qualfiltereddir=${OPTARG};;
+                d) qualfiltereddir=${OPTARG};;
                 m) mappingdir=${OPTARG};;
 				Q) Q=${OPTARG};;
                 t) threads=${OPTARG};;
