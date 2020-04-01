@@ -2,7 +2,7 @@
 Pipeline streamlining analysis of **target enrichment** sequencing data
 
 
-# Tutorial using toy dataset
+# Tutorial using toy dataset [in prep.]
 
 ### STEP 1: READ MAPPING
 #### mapping
