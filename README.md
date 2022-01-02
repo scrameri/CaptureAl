@@ -1,43 +1,62 @@
 # CaptureAl
-Pipeline streamlining analysis of **target enrichment** sequencing data
+Pipeline streamlining analysis of **target enrichment sequencing** data
 
 
 # Tutorial using toy dataset [in prep.]
+
+### Check Installation
+This repository provides script that use third-party software. These sofware tools must be executable from your computing environment:
+- R and corresponding Rscript (tested on version 3.1.2, 3.6 and 4.0)
+- python (tested on version 2.7.11)
+- java (tested on version 1.8.0_73)
+- perl (tested on version 5.16.3)
+- fastqc (tested on version 0.11.4)
+- trimmomatic (tested on version 0.35)
+- bwa (tested on version 0.7.17)
+- sambamba (tested on version 0.8.0)
+- samtools (tested on version 1.2)
+- bedtools (tested on version 2.28.0)
+- picard-tools (tested on version 2.23.8)
+- spades or dipspades (tested on version 3.14.1)
+- exonerate (tested on version 2.4.0)
+- freebayes (tested on version 1.3.4)
 
 ### Set Parameters
 ```bash
 # input directories
 scratch="/cluster/home/crameris/scratch"
-raw="~/home/Dalbergia/uce/seq-rawdata/novaseq-run9-10_Dec.2021"
-batch=$(basename $raw)                          
-mappingdir="mapping/${batch}"
+raw="${scratch}/CaptureAl/seq-rawdata/example"
+run=$(basename ${raw})                          
+mappingdir="${scratch}/mapping-reads-to-2396/${run}"
 
-# input files
-adapter="/cluster/work/gdc/people/crameris/Dalbergia/uce/seq-qualfiltered/adapters.txt"
-ref="/cluster/work/gdc/people/crameris/Dalbergia/uce/references/consDalbergia_4c_2396.fasta"
-
-# output directories
-fastqc_raw="fastqc_raw"
-fastqc_trim="fastqc_trim"
-
-threads=10
 ```
+
+Depending on your computing environment, there is the **BSUB solution** and the **GNU parallel** solution to run programs for many samples or loci in parallel. The first uses GNU `parallel` and is suitable for execution on clusters or personal computers, and the second depends on `bsub` and is suitable for execution on large high-performance clusters. In each case, multiple so-called jobs are distributed and executed on different computing nodes.
+
+The GNU parallel scripts take arguments via available options (e.g. execute `somescript.sh -s samples.txt -t 5` to apply an analysis step to all samples specified in `samples.txt` using 5 threads). For reproducibility, log files will document which arguments were passed to each script.
+
+The BSUB scripts have all their arguments set in the script section (`# arguments`) and are therefore scripts and log files at the same time, which ensures reproducibility. The section `## Resource usage` is used to set the amount of computing nodes (threads), memory (in MB) and time (in hours) needed for each submitted job. These need to be set according to the amount of data analyzed, and it's always good practice to test the requirements on a subset of jobs to prevent that submitted jobs are allocated too much resources, leading to inefficient use of shared computing power at the expense of other users, or too little resoruces, leading to premature job termination (automatic killing) with no results.
+
+This tutorial uses BSUB scripts, but analogous scripts for both solutions are available in the CaptureAl repository.
+
 
 ### PREPROCESSING READS
 #### Define samples to process
 
-You should tell the pipeline which files with raw sequencing reads (typically ending in `*fastqc.gz` or `*fq.gz`) should be processed. Some analysis steps, such as *read trimming* and *mapping* can be done separately for each file, while later steps such as *alignment* require that a collection of samples are analyzed up to a certain step.
+Some analysis steps, such as *read trimming* and *mapping* can be done separately for each sample with sequence data, while later steps such as *alignment* require that a collection of samples is analyzed up to a certain step. 
 
-Let's start by going to our working directory `$scratch`. This directory will be used to write a lot of output, and scratch directories are typically the best-suited to do so efficiently. However, bear in mind that data is stored only temporarily on scratch directories, with no backup.
+In most steps, you can tell the pipeline which samples or loci should be processed.
 
-Let's also peek into the directory containing files with raw reads (`$raw`) and extract the *basename* of every sample located there. If the data is paired-end, a sample will have forward and reverse reads, and downstream programs such as *Trimmomatic* need to know which files belong together. Files with the same basename are assumed to represent forward and reverse reads of the same DNA library.
+Let's start by changing to our working directory `${raw}`. It is highly recommended to work on a scratch disk, as this will speed up analyses and prevent automatic backup of heavy unzipped or unimportant temporary files generated during the analysis. However, bear in mind that data is stored only temporarily on scratch, and should be moved to a directory with backup once the analysis is finished, e.g. using the `mv` or `rsync` commands.
+
+Since the pipeline needs to know which samples should be processed, we start by extracting the *basename* of every sample located in our working directory. If the data is paired-end, a sample will have forward (file name including `_R1_` or `_R1.`) and reverse (file name including `_R2_` or `_R2.`) reads, and these file pairs should have a common *basename*. Downstream programs such as *Trimmomatic* need to know which files belong to the same DNA library.
 
 ```bash
-cd $scratch
+cd ${raw}
 find ${raw} -maxdepth 1 -regextype egrep -regex '.*[_.]R1[_.].*' |sed 's!.*/!!' |sed 's/[.][/]//' |sed 's/[_.]R1[_.].*//' |sort |uniq > samples.txt
 ```
 
-Have a look at `samples.txt` to see if the expected basenames are there. There should be half as many lines in `samples.txt` as `*fastq.gz` files in `$raw`.
+Have a look at `samples.txt` and see if the expected sample basenames are there. There should be half as many lines in `samples.txt` as `*fastq.gz` files in `${raw}`.
 
 
 #### Run FastQC on raw reads
@@ -46,19 +65,10 @@ Have a look at `samples.txt` to see if the expected basenames are there. There s
 
 The most important arguments of `fastqc` are `-t` (number of threads), `-o` (output directory, needs to exist) and `-a` (non-standard FASTA file with adapter sequences).
 
-Depending on your computing environment, there is the **BSUB solution** and the **GNU parallel** solution to run programs for many samples in parallel. The first depends on `bsub` and is suitable for execution on large high-performance clusters, while the second uses GNU `parallel` and is suitable for execution on clusters or personal computers. I'll provide both solutions where possible. Scripts for both solutions are available in the CaptureAl repository.
+This will create an output directory `${fastqc_raw}` and write two output files (`*_fastqc.html` and `*_fastqc.zip`) for each input file (`*.gz`).
 
-This will create an output directory `$fastqc_raw` and write two output files (`*_fastqc.html` and `*_fastqc.zip`) for each input file (`*.gz`).
-
-
-**GNU Parallel solution**
 ```bash
-if [ ! -d $fastqc_raw ] ; then mkdir $fastqc_raw ; fi
-parallel -a <(ls -1 ${raw}/*fastq.gz) -j $threads fastqc -t 1 -o $fastqc_raw
-```
-
-**BSUB solution**
-```bash
+cd ${raw}
 bsub < bsub.fastqc.sh
 ```
 
@@ -74,10 +84,10 @@ The FastQC plotting function is `plot.fastqc.R`. It's arguments can be seen by e
 4) PDF width (default: 12 inches)
 
 ```bash
-cd $fastqc_raw
+cd ${fastqc_raw}
 ls -1 *_fastqc.zip > samples.fastqc.txt
-plot.fastqc.R samples.fastqc.txt fastqc_raw.pdf 18 18 > /dev/null
-cd ../
+plot.fastqc.R samples.fastqc.txt fastqc_raw.pdf 18 18
+cd ${raw}
 ```
 
 #### Trim raw reads using Trimmomatic
@@ -94,15 +104,6 @@ Read trimming is the removal of (parts of) reads with low sequencing quality, sm
 
 This will create an output directory `$batch` and write a `*.trim1.*.fastq.gz` (forward trimmed reads) and a `*.trim2.*.fastq.gz` (reverse trimmed reads) file for every sample in `samples.txt`. Unpaired reads (`*.U1.*fastq.gz`, `*.U2.*fastq.gz`) and log files (`*.log`, `*.err`) with process prints and errors will be located in the `logs` subdirectory.
 
-***GNU Parallel solution***
-```bash
-if [ ! -d $batch ] ; then mkdir $batch ; fi
-cd $batch
-cp $scratch/samples.txt .
-trim.fastq.sh -s samples.txt -a $adapter -r $raw -x '_R1.fastq.gz,_R2.fastq.gz' -t $threads
-```
-
-***BSUB solution***
 ```bash
 bsub < bsub.trimmomatic.sh
 ```
@@ -110,27 +111,19 @@ bsub < bsub.trimmomatic.sh
 #### Run FastQC on trimmed reads
 Let's run *FastQC* on the trimmed reads now.
 
-***GNU Parallel solution***
 ```bash
-if [ ! -d $fastqc_trim ] ; then mkdir $fastqc_trim ; fi
-parallel -a <(ls -1 *fastq.gz) -j $threads fastqc -t 1 -o $fastqc_trim
-```
-
-***BSUB solution***
-```bash
+cd ${scratch}/seq-qualfiltered/${run} # go to trimmed reads dir
 bsub < bsub.fastqc.sh
 ```
 
 Let's now visualize the *FastQC* results of the trimmed reads, and compare them to the results of the raw reads.
 
 ```bash
-cd $fastqc_trim
+cd ${fastqc_trim}
 ls -1 *_fastqc.zip > samples.fastqc.txt
-plot.fastqc.R samples.fastqc.txt fastqc_trimmed.pdf 18 18 > /dev/null
+plot.fastqc.R samples.fastqc.txt fastqc_trimmed.pdf 18 18
+cd ${trimmed}
 ```
-
-
-
 
 
 ### STEP 1: READ MAPPING
@@ -142,7 +135,7 @@ run.bwamem.sh -s samples.txt -r $ref -e .trim1.fastq.gz,.trim2.fastq.gz -T 10 -Q
 ```
 
 #### coverage analysis
-This computes coverage statistics for samples in ```samples.txt``` (for reads mapped with quality 20), using 4 threads in parallel.
+This computes coverage statistics for samples in ```samples.txt``` for reads mapped with quality 20.
 ```
 get.coverage.stats.sh -s samples.txt -Q 20 -t 4
 ```
