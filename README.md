@@ -25,17 +25,18 @@ This repository provides script that use third-party software. These sofware too
 ```bash
 # input directories
 scratch="/cluster/home/crameris/scratch"
-raw="${scratch}/CaptureAl/seq-rawdata/example"
-run=$(basename ${raw})                          
+raw="${scratch}/CaptureAl/seq-rawdata/tutorial"
+trimmed="${scratch}/CaptureAl/seq-qualfiltered/tutorial"
+ref="/cluster/home/crameris/reference.fasta"
 mappingdir="${scratch}/mapping-reads-to-2396/${run}"
-
+run=$(basename ${raw})                          
 ```
 
 Depending on your computing environment, there is the **BSUB solution** and the **GNU parallel** solution to run programs for many samples or loci in parallel. The first uses GNU `parallel` and is suitable for execution on clusters or personal computers, and the second depends on `bsub` and is suitable for execution on large high-performance clusters. In each case, multiple so-called jobs are distributed and executed on different computing nodes.
 
 The GNU parallel scripts take arguments via available options (e.g. execute `somescript.sh -s samples.txt -t 5` to apply an analysis step to all samples specified in `samples.txt` using 5 threads). For reproducibility, log files will document which arguments were passed to each script.
 
-The BSUB scripts have all their arguments set in the script section (`# arguments`) and are therefore scripts and log files at the same time, which ensures reproducibility. The section `## Resource usage` is used to set the amount of computing nodes (threads), memory (in MB) and time (in hours) needed for each submitted job. These need to be set according to the amount of data analyzed, and it's always good practice to test the requirements on a subset of jobs to prevent that submitted jobs are allocated too much resources, leading to inefficient use of shared computing power at the expense of other users, or too little resoruces, leading to premature job termination (automatic killing) with no results.
+The BSUB scripts have all their arguments set in the script section (`# arguments`), and they are therefore scripts and log files at the same time, but log files are still written where appropriate, which ensures reproducibility. The section `## Resource usage` is used to set the amount of computing nodes (threads), memory (in MB) and time (in hours) needed for each submitted job. These need to be set according to the amount of data analyzed, and it's always good practice to test the requirements on a subset of jobs to prevent that submitted jobs are allocated too much resources, leading to inefficient use of shared computing power at the expense of other users, or too little resoruces, leading to premature job termination (automatic killing) with no results.
 
 This tutorial uses BSUB scripts, but analogous scripts for both solutions are available in the CaptureAl repository.
 
@@ -74,7 +75,7 @@ bsub < bsub.fastqc.sh
 
 #### Visualize FastQC results as a PDF
 
-*FastQC* already provides a visualization of the results via .html files. However, if you work with many samples, you'd need to inspect dozens or hundreds of such files manually. CaptureAl provides a concise visualization of up to hundred or more `*_fastqc.zip` result files, in a single PDF file of 18 pages. Some plots show the distribution of key statistics across all samples, while other plots show detailled statistics on a per-sample basis using `ggplot2` and facets for a direct comparison across samples.
+[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) already provides a visualization of the results via .html files. However, if you work with many samples, you'd need to inspect dozens or hundreds of such files manually. CaptureAl provides a concise visualization of up to hundred or more `*_fastqc.zip` result files, in a single PDF file of 18 pages. Some plots show the distribution of key statistics across all samples, while other plots show detailled statistics on a per-sample basis using `ggplot2` and facets for a direct comparison across samples.
 
 The FastQC plotting function is `plot.fastqc.R`. It's arguments can be seen by executing the function without arguments. They are:
 
@@ -84,10 +85,8 @@ The FastQC plotting function is `plot.fastqc.R`. It's arguments can be seen by e
 4) PDF width (default: 12 inches)
 
 ```bash
-cd ${fastqc_raw}
-ls -1 *_fastqc.zip > samples.fastqc.txt
+ls -1 fastqc/*_fastqc.zip > samples.fastqc.txt
 plot.fastqc.R samples.fastqc.txt fastqc_raw.pdf 18 18
-cd ${raw}
 ```
 
 #### Trim raw reads using Trimmomatic
@@ -102,48 +101,49 @@ Read trimming is the removal of (parts of) reads with low sequencing quality, sm
 4) SLIDINGWINDOW:4:15 
 5) MINLEN:50
 
-This will create an output directory `$batch` and write a `*.trim1.*.fastq.gz` (forward trimmed reads) and a `*.trim2.*.fastq.gz` (reverse trimmed reads) file for every sample in `samples.txt`. Unpaired reads (`*.U1.*fastq.gz`, `*.U2.*fastq.gz`) and log files (`*.log`, `*.err`) with process prints and errors will be located in the `logs` subdirectory.
+This will create an output directory `${trimmed}` and write a `*.trim1.*.fastq.gz` (forward trimmed reads) and a `*.trim2.*.fastq.gz` (reverse trimmed reads) file for every sample in `samples.txt`. Unpaired reads (`*.U1.*fastq.gz`, `*.U2.*fastq.gz`) and log files (`*.log`, `*.err`) with process prints and errors will be located in the `logs` subdirectory.
 
 ```bash
 bsub < bsub.trimmomatic.sh
 ```
 
+
 #### Run FastQC on trimmed reads
-Let's run *FastQC* on the trimmed reads now.
+Let's run [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) on the trimmed reads now. The `bsub.fastqc.sh` script is aware of your current directory and will produce a `fastqc` subfolder with results for the trimmed reads.
 
 ```bash
-cd ${scratch}/seq-qualfiltered/${run} # go to trimmed reads dir
+cd ${trimmed}
 bsub < bsub.fastqc.sh
 ```
 
 Let's now visualize the *FastQC* results of the trimmed reads, and compare them to the results of the raw reads.
 
 ```bash
-cd ${fastqc_trim}
-ls -1 *_fastqc.zip > samples.fastqc.txt
+ls -1 fastqc/*_fastqc.zip > samples.fastqc.txt
 plot.fastqc.R samples.fastqc.txt fastqc_trimmed.pdf 18 18
-cd ${trimmed}
 ```
+You should see on page 10 that the per sequence quality scores have increased slightly, and on page 17 that the adapter content has decreased to very low levels now.
 
 
 ### STEP 1: READ MAPPING
 #### mapping
-This runs ```bwa mem``` for samples in ```samples.txt``` using ```reference.fasta``` as reference sequences and 4 \* 5 = 20 threads in parallel. The input are trimmed reads located in the ```path/to/reads``` directory. Input is specified as *paired-end* reads, with two files per sample, ending in ```.trim1.fastq.gz``` and ```.trim2.fastq.gz```, respectively.
+This runs `bwa mem` for samples in `samples.txt` using `${ref}` as reference sequences. The input are trimmed reads located in the ${in} input directory. Input is specified as *paired-end* reads, with two files per sample, ending in `.trim1.fastq.gz` and `.trim2.fastq.gz`, respectively.
+
 ```
-fix.fasta.headers.sh $ref
-run.bwamem.sh -s samples.txt -r $ref -e .trim1.fastq.gz,.trim2.fastq.gz -T 10 -Q 20 -d path/to/reads/ -t 4
+bsub < bsub.bwamem.sh
 ```
+This creates an output directory ${mapping} with a subfolder for each sample, as well as a copy of the sample file `samples.txt`. In each sample subdirectory, you'll find the reference `*.fasta` file used to map against, the mapped reads in the `*.bam` files and corresponding `*.bam.bai` index files, as well as some basic mapping statistics ending in `*.flagstats.txt` and a `bwa.Q${Q}.log` log file.
 
 #### coverage analysis
-This computes coverage statistics for samples in ```samples.txt``` for reads mapped with quality 20.
+This computes coverage statistics for samples in `samples.txt` for reads mapped with quality ${Q} against all regions in `${ref}`.
 ```
-get.coverage.stats.sh -s samples.txt -Q 20 -t 4
+cd ${mapping}
+bsub < bsub.get.coverage.stats.sh
 ```
 
-This collects coverage statistics for samples in ```samples.txt``` (for reads mapped with quality 20), and writes them all to one file.
-
+This collects mapping and coverage statistics for all samples in `samples.txt` using the mapping quality and coverage thresholds ${Q} and ${maxcov}, respectively.
 ```
-collect.coverage.stats.R samples.txt 20
+collect.coverage.stats.sh -s samples.txt -Q ${Q} -m ${maxcov}
 ```
 
 #### visualize and filter regions based on coverage statistics
