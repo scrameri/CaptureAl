@@ -1,4 +1,4 @@
-# Step 0.2: Read trimming
+# Step 0.2: Read Trimming
 
 #### Trim raw reads using Trimmomatic
 
