@@ -1,6 +1,15 @@
 # Step 1: Read Mapping
 #### mapping
+
+Set an environmental variable containing the directory name where raw reads are located. The same name can then be re-used to create matching output directories.
+
+```bash
+run=$(basename ${raw}) # name of directory with raw reads: tutorial in this example
+```
+
+
 This runs `bwa mem` for samples in `samples.txt` using `${ref}` as reference sequences. The input are trimmed reads located in the ${in} input directory. Input is specified as *paired-end* reads, with two files per sample, ending in `.trim1.fastq.gz` and `.trim2.fastq.gz`, respectively.
+
 
 ```
 bsub < bsub.bwamem.sh
@@ -10,7 +19,7 @@ This creates an output directory ${mapping} with a subfolder for each sample, as
 #### coverage analysis
 This computes coverage statistics for samples in `samples.txt` for reads mapped with quality ${Q} against all regions in `${ref}`.
 ```
-cd ${mapping}
+mapping="${scratch}/mapping-reads-to-2396/${run}"
 bsub < bsub.get.coverage.stats.sh
 ```
 
