@@ -36,12 +36,12 @@ This generates a heatmap and violin plots of the coverage analysis results. The 
 ```
 # Filtering thresholds
 minploci=0.2 # min. proportion of regions recovered per sample (filters taxa)
-minptaxa=0.4 # min. proportion of samples recovered per region (filters loci)
+minptaxa=0.7 # min. proportion of samples recovered per region (filters loci)
 minlen=1     # minimum mapped length in .bam (filters loci)
 mincov=8     # minimum average coverage in .bam (filters loci)
 maxcov=1000  # maximum average coverage in .bam (filters loci)
 minratio=0   # minimum target alignment fraction (alignment length / target length) (filters loci)
-minfrac=0.4  # minimum fraction of samples conforming to the absolute locus filters (minlen, mincov, maxcov, minratio)
+minfrac=0.7  # minimum fraction of samples conforming to the absolute locus filters (minlen, mincov, maxcov, minratio)
 
 # Visualize coverage analysis and filter loci
 filter.visual.coverages.R mapfile.txt coverage_stats.Q${Q}.txt ${ref} ${minploci} ${minptaxa} ${minlen} ${mincov} ${maxcov} ${minratio} ${minfrac}
