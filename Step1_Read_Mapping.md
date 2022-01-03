@@ -1,6 +1,4 @@
-
-
-### STEP 1: READ MAPPING
+# STEP 1: READ MAPPING
 #### mapping
 This runs `bwa mem` for samples in `samples.txt` using `${ref}` as reference sequences. The input are trimmed reads located in the ${in} input directory. Input is specified as *paired-end* reads, with two files per sample, ending in `.trim1.fastq.gz` and `.trim2.fastq.gz`, respectively.
 
