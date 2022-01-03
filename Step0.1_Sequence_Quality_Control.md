@@ -1,4 +1,5 @@
-### PREPROCESSING READS
+# Sequence Quality Control
+
 #### Define samples to process
 
 Some analysis steps, such as *read trimming* and *mapping* can be done separately for each sample with sequence data, while later steps such as *alignment* require that a collection of samples is analyzed up to a certain step. 
