@@ -1,8 +1,5 @@
-# CaptureAl
+# CaptureAl Analysis Pipeline
 Pipeline streamlining analysis of **target enrichment sequencing** data
-
-
-# Tutorial using toy dataset [in prep.]
 
 ### Check Installation
 This repository provides scripts that use third-party software. These sofware tools must be executable from your computing environment:
@@ -21,20 +18,11 @@ This repository provides scripts that use third-party software. These sofware to
 - exonerate (tested on version 2.4.0)
 - freebayes (tested on version 1.3.4)
 
-### Set Parameters
-```bash
-# input directories
-scratch="/cluster/home/crameris/scratch"
-raw="${scratch}/CaptureAl/seq-rawdata/tutorial"
-trimmed="${scratch}/CaptureAl/seq-qualfiltered/tutorial"
-ref="/cluster/home/crameris/reference.fasta"
-mappingdir="${scratch}/mapping-reads-to-2396/${run}"
-```
-
-Depending on your computing environment, there is the **GNU parallel** solution and the **BSUB solution** to run programs for many samples or loci in parallel. The first uses GNU `parallel` and is suitable for execution on clusters or personal computers, and the second depends on `bsub` and is suitable for execution on large high-performance clusters. In each case, multiple so-called jobs are distributed and executed on different computing nodes.
+### Parallel Computing
+Depending on your computing environment, there is the **GNU parallel** solution and the **BSUB solution** to run the analysis steps for many samples or loci in parallel. The first uses GNU `parallel` and is suitable for execution on clusters or personal computers, and the second depends on `bsub` and is suitable for execution on large high-performance clusters. In each case, multiple so-called jobs are distributed and executed on different computing nodes.
 
 The GNU parallel scripts take arguments via the available options, which are explained in the first section of each script (e.g. execute `somescript.sh -s samples.txt -t 5` to apply an analysis step to all samples specified in `samples.txt` using 5 threads). For reproducibility, automatically created log files will document which arguments were passed to each script.
 
 The BSUB scripts have all their arguments set in the script (section `# arguments`), and they are therefore scripts and log files at the same time. Where appropriate, log files are still automatically created, which ensures reproducibility. The section `## Resource usage` is used to set the amount of computing nodes (threads), memory (in MB) and time (in hours) needed for each submitted job. These need to be set according to the amount of data analyzed. They should be as close as possible to the actual resources being used. It's always good practice to test the resources needed per job on a subset of e.g. 5 jobs before starting a bing sequence of jobs. This can be achieved by inspecting the lsf.o${job_ID} file, e.g. using the program `get.lsf.summary.sh lsf.o${job_ID}`, which displays a summary of average and maximum memory usage and computation time. This helps to set memory and time requirements for a big sequence of jobs, and prevents that submitted jobs are allocated too much resources, leading to inefficient use of shared computing power at the expense of other users, or too little resoruces, leading to premature job termination (automatic killing) with no results.
 
-This tutorial uses BSUB scripts, but analogous scripts for both solutions are available in the CaptureAl repository.
+This tutorial is based on **BSUB** submission scripts, but analogous scripts for both solutions are available in the CaptureAl repository.
