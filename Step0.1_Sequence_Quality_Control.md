@@ -1,4 +1,4 @@
-# Sequence Quality Control
+# Step 0.1: Sequence Quality Control
 
 #### Define samples to process
 
