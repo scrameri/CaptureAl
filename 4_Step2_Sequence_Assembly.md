@@ -1,4 +1,5 @@
-### STEP 2: SEQUENCE ASSEMBLY
+# Step 2: Sequence Assembly
+
 #### extract read pairs 
 This extracts .fastq read pairs located in ```/path/to/reads``` for samples in ```samples.txt``` and loci in ```loci.txt```, and writes two separate .fastq files (one with forward reads, one with reverse reads) for each locus. One or both of the extracted reads per read pair mapped with mapping quality 20.
 
