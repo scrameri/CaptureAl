@@ -5,6 +5,9 @@ Set an environmental variable containing the directory name where raw reads are 
 
 ```bash
 run=$(basename ${raw}) # name of directory with raw reads: tutorial in this example
+ref=reference.fasta
+Q=10
+maxcov=100
 ```
 
 
@@ -12,8 +15,6 @@ This runs `bwa mem` for samples in `samples.txt` using `${ref}` as reference seq
 
 
 ```
-Q=10
-maxcov=100
 bsub < bsub.bwamem.sh
 ```
 This creates an output directory ${mapping} with a subfolder for each sample, as well as a copy of the sample file `samples.txt`. In each sample subdirectory, you'll find the reference `*.fasta` file used to map against, the mapped reads in the `*.bam` files and corresponding `*.bam.bai` index files, as well as some basic mapping statistics ending in `*.flagstats.txt` and a `bwa.Q${Q}.log` log file.
@@ -43,5 +44,5 @@ minratio=0   # minimum target alignment fraction (alignment length / target leng
 minfrac=0.4  # minimum fraction of samples conforming to the absolute locus filters (minlen, mincov, maxcov, minratio)
 
 # Visualize coverage analysis and filter loci
-filter.visual.coverages.R mapfile.txt coverage_stats.Q${Q}.txt reference.fasta ${minploci} ${minptaxa} ${minlen} ${mincov} ${maxcov} ${minratio} ${minfrac}
+filter.visual.coverages.R mapfile.txt coverage_stats.Q${Q}.txt ${ref} ${minploci} ${minptaxa} ${minlen} ${mincov} ${maxcov} ${minratio} ${minfrac}
 ````
