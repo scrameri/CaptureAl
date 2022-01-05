@@ -1,4 +1,4 @@
-#!/gdc_home4/scrameri/bin/Rscript
+#!/cluster/apps/r/3.6.0_openblas/x86_64/bin/Rscript
 
 #########################
 ## PLOT CONTIG LENGTHS ##
@@ -265,7 +265,7 @@ print(p2)
 
 suppressWarnings(do.heatmap(dat = data.frame(dmerge), xfac = "target", yfac = "ID", znum = "length", ygr = "LABEL",
                             ycols = rev(ycols), limit = pq[2], sortx = sortx, hclustmethod = hclustmethod, 
-                            low = low, mid = mid, high = high, title = paste("ALL regions,", "capped number of contigs")))
+                            low = low, mid = mid, high = high, title = paste("ALL regions,", "capped contig length")))
 
 graphics.off()
 

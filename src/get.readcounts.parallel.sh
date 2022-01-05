@@ -2,8 +2,6 @@
 
 ## Usage: get.readcounts.parallel.sh -s <samples.txt> -p <prefix> -x <suffix> -t <threads>
 
-## Authors: Simon Crameri (ETHZ), Stefan Zolelr (GDC) 
-
 ## Define arguments
 while getopts s:p:x:t: opts
 do

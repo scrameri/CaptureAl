@@ -6,8 +6,7 @@ use IO::Handle;
 use Getopt::Std;
 
 # Extract reads from fastq file.  
-
-# Author: Stefan Zoller, GDC
+#
 
 
 my %options=();

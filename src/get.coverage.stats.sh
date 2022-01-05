@@ -1,91 +1,100 @@
 #!/bin/bash
 
-## Usage: get.coverage.stats.sh -s <samples.txt> -Q <mapping quality> -t <threads>
+## Usage: get.coverage.stats.sh -d <mappingdir> -s <samples.txt> -Q <mapping quality> -t <threads>
 
-## Needs: get.coverage.stats.R, samtools
+## Needs: get.coverage.stats.R, samtools, bedtools
 
 ## Define arguments
-while getopts s:Q:t: opts
+while getopts d:s:Q:t: opts
 do
         case "${opts}"
         in
+        	d) in=${OPTARG};;
         	s) sfile=${OPTARG};;
-        	Q) mapQ=${OPTARG};;
+        	Q) Q=${OPTARG};;
         	t) threads=${OPTARG};;
     	esac
 done
 
 ## Check arguments
-if [ ! $sfile ] ; then echo "sample file (-s option) not provided, stopping" ; exit 0 ; fi
+if [ ! $in ] ; then echo "mapping directory (-d option) not provided, using current directory" ; in=$(pwd) ; fi
+if [ ! -d $in ] ; then echo "mapping directory <$in> not found, stopping" ; exit 0 ; fi
+if [ ! $sfile ] ; then echo "sample file (-s option) not provided, assuming <samples.txt>" ; sfile="samples.txt" ; fi
 if [ ! -f $sfile ] ; then echo "sample file <$sfile> not found, stopping" ; exit 0 ; fi
-if [ ! $mapQ ] ; then echo "mapping quality threshold (-Q option) not specified (in .bam filename), stopping" ; exit 0 ; fi
-if [ ! $threads ] ; then echo "number of threads (-t option) not specified, setting to 8" ; threads=8 ; fi
+if [ ! $Q ] ; then echo "mapping quality threshold (-Q option) not specified (in .bam filename), stopping" ; exit 0 ; fi
+if [ ! $threads ] ; then echo "number of threads (-t option) not specified, setting to 2" ; threads=2 ; fi
 if [ $threads -gt 30 ] ; then echo "number of threads must not exceed 30, stopping." ; exit 0 ; fi
+ref=$(echo ${in}/*.fasta)
+if [ ! -f ${ref} ] ; then echo "reference fasta file not found in mapping directory ${in}, stopping" ; exit 0 ; fi
 
-
-## Collect mapping stats
-if [ -f mapping.stats.txt ]
+## Get mapping stats
+if [ -f ${in}/mapping.stats.Q${Q}.txt ]
 then
-	echo ; echo "mapping.stats.txt already exists, moving to mapping.stats.txt.bak" ; echo
-	mv mapping.stats.txt mapping.stats.txt.bak
+	echo ; echo "mapping.stats.Q${Q}.txt already exists, moving to mapping.stats.Q${Q}.txt.bak" ; echo
+	mv ${in}/mapping.stats.Q${Q}.txt ${in}/mapping.stats.Q${Q}.txt.bak
 fi
 
-echo "\ncollecting mapping stats..." ; echo
-echo -e "sample\tread-ids\ttotal-reads\tproperly-paired\tsingletons\t%properly-paired" > mapping.stats.txt
-mkdir mapping.stats.tmp
+echo ; echo "collecting mapping stats..." ; echo
 getMappingStats() {
-	sample=$1
-	echo $sample
-	bamfile="${sample}/${sample}.bwa-mem.mapped.Q${mapQ}.sorted.bam"
-	flagstats="${sample}/${sample}.bwa-mem.mapped.Q${mapQ}.flagstats"
-	
-	echo -en "$sample\t"  >> mapping.stats.tmp/${sample}.tmp
+	name=$1
+	echo $name
+	bamfile="${in}/${name}/${name}.bwa-mem.sorted.Q${Q}.nodup.bam"
+	flagstats="${in}/statsQ20/${name}.flagstats.txt"
+	ofile="${in}/${name}/${name}.bwa-mem.sorted.Q${Q}.nodup.mapstats.txt"
+
+	# header	
+	echo -e "sample\tread-ids\ttotal-reads\tproperly-paired\tsingletons\t%properly-paired" > ${ofile}
 	
 	# from samtools view: get number of unique read IDs (pairs + singletons)
-	samtools view ${bamfile} | cut -f1 | sort | uniq | wc -l | tr "\n" "\t" >> mapping.stats.tmp/${sample}.tmp
+	nid=$(samtools view ${bamfile} | cut -f1 | sort | uniq | wc -l)
 	
 	# from flagstats: get number of mapped reads (fwd + rev)
-	# samtools view ${bamfile} | cut -f1 | wc -l | tr "\n" "\t" >> mapping.stats.tmp/${sample}.tmp	
-	cat ${flagstats} | grep -P "in total|properly paired|singletons" | cut -f1 -d "+" | tr "\n" "\t" | awk '{print $1 "\t" $2 "\t" $3 "\t" $2/$1*100}'  >> mapping.stats.tmp/${sample}.tmp
+	tot=$(cat ${flagstats} | grep "in total" | cut -f1 -d' ')
+	pp=$(cat ${flagstats} | grep "properly paired" | cut -f1 -d' ')
+	si=$(cat ${flagstats} | grep "singletons" | cut -f1 -d' ')
+	percpp=$(awk -v a="$tot" -v b="$pp" 'BEGIN {print b/a*100}')
+	
+	echo -e "${name}\t${nid}\t${tot}\t${pp}\t${si}\t${percpp}"  >> ${ofile}
 	
 }
-export mapQ=${mapQ}
+export Q=${Q}
 export -f getMappingStats
 cat ${sfile} | parallel -j ${threads} getMappingStats
 
-
 # collect
-cat mapping.stats.tmp/*tmp >> mapping.stats.txt
-rm -r mapping.stats.tmp
+echo -e "sample\tread-ids\ttotal-reads\tproperly-paired\tsingletons\t%properly-paired" > ${in}/mapping.stats.Q${Q}.txt
+for name in $(cat ${sfile})
+do
+	infile="${in}/${name}/${name}.bwa-mem.sorted.Q${Q}.nodup.mapstats.txt"
+	cat $infile | tail -n+2 | head -n1 >> ${in}/mapping.stats.Q${Q}.txt
+done
+
 
 ## Calculating coverages
+echo ; echo "calculating coverages..." ; echo
 doCovcalc() {
 	sample=$1
-	echo $sample
-	cd ${sample}
-	ref=$(echo *.fasta)
-	bamfile=${sample}.bwa-mem.mapped.Q${mapQ}.sorted.bam
+	echo $name
+	bamfile="${in}/${name}/${name}.bwa-mem.sorted.Q${Q}.nodup.bam"
      	
 	## Calculate mapped length and average coverage per region
 	# by default, only considers regions with properly-paired reads (argument 3)
 	# by default, calculates coverages region by region to save memory in parallel mode (argument 4)	
 	get.coverage.stats.R ${bamfile} ${ref}
-	cd ..
 }
-export mapQ=${mapQ}
+export ref=${ref}
+export Q=${Q}
 export -f doCovcalc
-echo "\ncalculating coverages..." ; echo
 cat ${sfile} | parallel -j ${threads} doCovcalc
 
 
-## Get coverage stats per category
+## Get coverage stats above threshold
+echo ; echo "calculating coverages above thresholds..." ; echo
 doCount() {
-
 	sample=$1
-	echo $sample
-	cd $sample
-	ifile="${sample}.bwa-mem.mapped.Q${mapQ}.sorted.coverage.txt"
-	ofile="${sample}.coverage.above.threshold.txt"
+	echo ${name}
+	ifile="${in}/${name}/${name}.bwa-mem.sorted.Q${Q}.nodup.coverage.txt"
+	ofile="${in}/${name}/${name}.bwa-mem.sorted.Q${Q}.nodup.covtab.txt"
 	/bin/rm -rf ${ofile}
 	
 	for i in 1 2 3 4 5 6 7 8 9 10 15 20 30 40 50 100 200 300 400 500 600 700 800 900 1000 10000
@@ -93,35 +102,34 @@ doCount() {
 		echo -n -e  "coverage >= $i\t" >> ${ofile}
 		cat ${ifile} | tail -n +2 | awk '{if($4 >='$i' ) print $0}' |wc -l >> ${ofile}
 	done
-	cd ..
 }
+export Q=$Q
 export -f doCount
-echo "\ncalculating coverages above thresholds..." ; echo
 cat ${sfile} | parallel -j ${threads} doCount
 
 
 ## Collect coverage stats
-if [ -f coverage.stats.txt ]
+if [ -f ${in}/coverage.stats.Q${Q}.txt ]
 then
-	echo "coverage.stats.txt already exists, moving to coverage.stats.txt.bak" ; echo
-	mv coverage.stats.txt coverage.stats.txt.bak
+	echo "coverage.stats.Q${Q}.txt already exists, moving to coverage.stats.Q${Q}.txt.bak" ; echo
+	mv ${in}/coverage.stats.Q${Q}.txt ${in}/coverage.stats.Q${Q}.txt.bak
 fi
 
-echo "\ncollecting coverage stats..." ; echo
-echo -ne "sample\t1\t10\t20\t30\t40\t50\t100\t200\t300\t400\t500\t1000\n" > coverage.stats.txt
-for sample in  $(cat $sfile)
+echo ; echo "collecting coverage stats..." ; echo
+echo -ne "sample\t1\t10\t20\t30\t40\t50\t100\t200\t300\t400\t500\t1000\n" > ${in}/coverage.stats.Q${Q}.txt
+for sample in  $(cat ${sfile})
 do  
-	infile="${sample}/${sample}.coverage.above.threshold.txt"
-	echo -ne "${sample}\t" >> coverage.stats.txt
+	infile="${in}/${name}/${name}.bwa-mem.sorted.Q${Q}.nodup.covtab.txt"
+	echo -ne "${name}\t" >> ${in}/coverage.stats.Q${Q}.txt
 	for c in 1 10 20 30 40 50 100 200 300 400 500 1000 
 	do 
-		grep -w "coverage >= $c" ${infile} | cut -f2 | tr "\n" "\t"  >> coverage.stats.txt
+		grep -w "coverage >= $c" ${infile} | cut -f2 | tr "\n" "\t"  >> ${in}/coverage.stats.Q${Q}.txt
 	done 
-	echo >> coverage.stats.txt
+	echo >> ${in}/coverage.stats.Q${Q}.txt
 done
 
 
 ## Finish
-touch mapping.stats.txt
-touch coverage.stats.txt
+touch ${in}/mapping.stats.Q${Q}.txt
+touch ${in}/coverage.stats.Q${Q}.txt
 echo ; echo "All samples processed" ; echo

@@ -1,4 +1,4 @@
-#!/gdc_home4/scrameri/bin/Rscript
+#!/cluster/apps/r/3.6.0_openblas/x86_64/bin/Rscript
 
 ## Usage: get.coverage.stats.R <bam> <refseqs> <ppaired=TRUE> <allatonce =FALSE>
 
@@ -160,8 +160,8 @@ if (allatonce) {
 
 ## Write output
 if (verbose) cat("Writing output...\n")
-ext <- paste0(".", rev(unlist(strsplit(bam, split = "[.]")))[1], "$") ; if (nchar(ext) == 0) ext <- ".bam$"
-write.table(dd, file = gsub(ext, suffix, bam), sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
+ext <- paste0(".", tools::file_ext(bam))
+write.table(dd, file = gsub(".bwa-mem.sorted", "", gsub(ext, suffix, bam)), sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
 
 # t2 <- Sys.time()
 # paste0("Finish time: ", t2)

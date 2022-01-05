@@ -1,6 +1,8 @@
-#!/gdc_home4/scrameri/bin/Rscript
+#!/cluster/apps/r/3.6.0_openblas/x86_64/bin/Rscript
 
 ## Usage: filter.visual.coverages.R <sfile> <stats> <refseqs> <min.pregion=0.3> <min.ptaxa=0.3> <min.len=500> <min.cov=10> <max.cov=1000> <min.ratio=0.5> <min.frac=0.9>
+
+## Needs: ggplot2, ape, grid, VennDiagramm, tidyr
 
 ## Load libraries
 suppressPackageStartupMessages(library(ape)) # read.fasta, GC.content
@@ -46,7 +48,7 @@ if (!length(args) %in% c(3:10)) {
        7) <min.cov|NUM>:            minimum coverage in .bam [DEFAULT: 10];
        8) <max.cov|NUM>:            maximum coverage in .bam [DEFAULT: 1000];
        9) <min.ratio|NUM>:          minimum alignment fraction [DEFAULT: 0.5];
-       10) <min.frac|NUM>:          minimum fraction of samples conforming to the absolute filtering criteria 5-8
+       10) <min.frac|NUM>:          minimum fraction of samples conforming to the absolute filtering criteria 6-9
                                     (i.e., regions must meet criteria 5-8 in (100*<min.frac>)% of considered samples,
                                     separately for each considered group) [DEFAULT: 0.9]",
        call.=FALSE)
@@ -92,13 +94,14 @@ paste0("Starting time: ", t1)
 
 ## Additional arguments
 # ouput paths
+prefix <- tools::file_path_sans_ext(basename(stats))
 suffix <- paste(min.pregion,min.ptaxa,min.len,min.cov,max.cov,min.ratio,min.frac, sep = "-")
-outpdf <- paste0("coverage_stats-", suffix, ".pdf")  # output .pdf (visualization of coverage stats)
-outtxt1 <- paste0("coverage_stats-", suffix, ".txt")         # output .txt (merged coverage stats)
-outtxt2 <- paste0("regions_kept-", suffix, ".txt")   # filtered regions
-outtxt3 = paste0("taxa_kept-", min.pregion, ".txt")  # filtered samples
-logtxt <- paste0("coverage_stats-", suffix, ".log")  # output .log
-write.outtxt1 = FALSE                                # if TRUE, will write merged alignment stats
+outpdf <- paste0(prefix, "-", suffix, ".pdf")  # output .pdf (visualization of coverage stats)
+outtxt1 <- paste0(prefix, "-", suffix, ".txt")         # output .txt (merged coverage stats)
+outtxt2 <- paste0(prefix, "-regions-", suffix, ".txt")   # filtered regions
+outtxt3 = paste0(prefix, "-taxa-", min.pregion, ".txt")  # filtered samples
+logtxt <- paste0(prefix, "-", suffix, ".log")  # output .log
+write.outtxt1 = TRUE                                 # if TRUE, will write merged alignment stats
 
 # variables expected in <stat>
 regvar <- "region"              # variable name in <stat> denoting <region id>
@@ -126,6 +129,7 @@ low = "#A50026"                 # color used for the low end of the heatmap grad
 mid = "#F0E442"                 # color used for the mid point of the heatmap gradient
 high = "#081D58"                # color used for the high end of the heatmap gradient
 draw.venn = TRUE                # if TRUE, will plot VENN diagram of regions passing in each group (requires grid and VennDiagram libraries)
+plot.pca = FALSE                # if TRUE, will plot PCAs of coverage statistics per region
 plot.width <- 15                # output plot width
 plot.height <- 15               # output plot height
 
@@ -332,7 +336,6 @@ nnsamples <- sum(ds[,grpvar1] == navar) # number of samples without specified gr
 cat(paste0("\nmerged coverage stats have ", nrow(dc), " rows, ", ntaxa, " samples from ", ngroups, " groups (", ifelse(nnsamples > 0, "1", "0"), " thereof set to NA), ", nreg, " regions\n\n"))
 if (nrow(dc) != ntaxa * nreg) {
   warning(ntaxa * nreg, " rows in coverage stats expected, but only ", nrow(dc), " found.\nWill expand alignment stats for missing combinations (tidyr package needed).\n")
-  suppressPackageStartupMessages(library(tidyr))  # complete
   dc <- data.frame(tidyr::complete(dc, !! sym(idvar), !! sym(regvar)))
 }
 
@@ -585,8 +588,8 @@ p0 <- ggplot(dpreg, aes_string(x = grpvar3, y = "tax.reg", fill = grpvar3)) +
   geom_point(aes_string(colour = grpvar3)) +
   geom_hline(aes(yintercept = min.nreg), col = "tomato") +
   geom_hline(aes(yintercept = nreg)) +
-  scale_fill_manual(guide = FALSE, values = ycols) +
-  scale_colour_manual(guide = FALSE, values = ycols) +
+  scale_fill_manual(guide = "none", values = ycols) +
+  scale_colour_manual(guide = "none", values = ycols) +
   scale_y_continuous(sec.axis = sec_axis(~./nreg, breaks = min.nreg2lab, labels = min.nreg2lab), limits = c(min.nreg2, nreg)) +
   labs(x = "", y = "Number of regions recovered in a sample") +
   coord_flip() +
@@ -601,7 +604,7 @@ p1 <- ggplot(dmerge, aes_string(x = grpvar3, y = linbam, fill = grpvar3)) +
   labs(x = "", y = linbam) +
   geom_hline(yintercept = c(p1q[1], min.len, p1q[2]), 
              linetype = c(2, 1, 2), col = c(1, "tomato", 1)) +
-  scale_fill_manual(guide = FALSE, values = ycols) +
+  scale_fill_manual(guide = "none", values = ycols) +
   scale_y_log10() +
   coord_flip() +
   theme_bw() +
@@ -614,7 +617,7 @@ p2 <- ggplot(dmerge, aes_string(x = grpvar3, y = cinbam, fill = grpvar3)) +
   labs(x = "", y = cinbam) +
   geom_hline(yintercept = c(p2q[1], min.cov, max.cov, p2q[2]), 
              linetype = c(2, 1, 1, 2), col = c(1, "tomato", "tomato", 1)) +
-  scale_fill_manual(guide = FALSE, values = ycols) +
+  scale_fill_manual(guide = "none", values = ycols) +
   scale_y_log10() +
   coord_flip() +
   theme_bw() +
@@ -627,7 +630,7 @@ p3 <- ggplot(dmerge, aes_string(x = grpvar3, y = faln, fill = grpvar3)) +
   labs(x = "", y = "Alignment fraction (length of mapped region / length of reference sequence)") +
   geom_hline(yintercept = c(p3q[1], min.ratio, p3q[2]), 
              linetype = c(2, 1, 2), col = c(1, "tomato", 1)) +
-  scale_fill_manual(guide = FALSE, values = ycols) +
+  scale_fill_manual(guide = "none", values = ycols) +
   coord_flip() +
   theme_bw() +
   ggtitle(paste0("Number of ALL regions: ", nreg, " ; PASSED: ", faln.passed, " (", round(100*faln.passed/nreg,2), "%) ; FAILED: ", nreg-faln.passed, " (", round(100*(nreg-faln.passed)/nreg,2), "%)"))
@@ -641,7 +644,7 @@ p4 <- ggplot(dmerge, aes_string(x = faln, y = cinbam)) +
   geom_density_2d(alpha = 1, colour = "black", na.rm = TRUE) +
   xlab("Alignment fraction (length of mapped region / length of reference sequence)") +
   ylab("Average coverage of mapped region") +
-  scale_colour_manual(guide = FALSE, values = rev(ycols)) +
+  scale_colour_manual(guide = "none", values = rev(ycols)) +
   scale_y_log10() +
   facet_wrap(as.formula(paste("~", grpvar2))) +
   theme_bw() +
@@ -656,7 +659,7 @@ p5 <- ggplot(dmerge, aes_string(x = linbam, y = cinbam)) +
   geom_density_2d(alpha = 1, colour = "black", na.rm = TRUE) +
   xlab("Length of mapped region") +
   ylab("Average coverage of mapped region") +
-  scale_colour_manual(guide = FALSE, values = rev(ycols)) +
+  scale_colour_manual(guide = "none", values = rev(ycols)) +
   scale_y_log10() +
   scale_x_log10() +
   facet_wrap(as.formula(paste("~", grpvar2))) +
@@ -669,9 +672,9 @@ dref[,faln] <- dcon[match(dref[,regvar], dcon$Group.1),]$x
 p6 <- ggplot(dref, aes_string("tlen", "tgc", colour = "PASSED", alpha = faln, size = faln)) +
   geom_point(na.rm = TRUE) +
   geom_density_2d(aes(group = PASSED), colour = "black") +
-  scale_colour_manual(guide = FALSE, values = c(high, low)) +
-  scale_alpha_continuous(guide = FALSE, range = c(0.8,0.3)) +
-  scale_size_continuous(range = c(0.5,3.5), name = "Alginment\nfraction", labels = seq(0,1,by=0.25)) +
+  scale_colour_manual(guide = "none", values = c(high, low)) +
+  scale_alpha_continuous(guide = "none", range = c(0.8,0.3)) +
+  scale_size_continuous(name = "Alignment\nfraction") +
   labs(x = "Region length (in .fasta)", y = "Region GC content") +
   scale_x_log10() +
   theme_bw() +
@@ -686,15 +689,17 @@ datL <- na.omit(data.frame(dmedL, PASSED = dref[match(rownames(dmedL), dref[,reg
 dmedT <- sapply(nvar, FUN = function(x) {tapply(X = dmerge[,x], INDEX = dmerge[,idvar], FUN = function(y) {median(y, na.rm = T)})})
 datT <- na.omit(data.frame(dmedT, GROUP = dmerge[match(rownames(dmedT), dmerge[,idvar]),grpvar2]))
 
-pPCA1 <- ggpca(datL, colvar = "PASSED", cols = c(high, low)) +
-  facet_wrap(~PASSED) +
-  guides(color = FALSE) +
-  ggtitle(paste0("Number of ALL regions: ", nreg, " ; PASSED: ", lpassed, " (", round(100*lpassed/nreg,2), "%) ; FAILED: ", nreg-lpassed, " (", round(100*(nreg-lpassed)/nreg,2), "%)"))
+if (plot.pca) {
+	pPCA1 <- ggpca(datL, colvar = "PASSED", cols = c(high, low)) +
+  		facet_wrap(~PASSED) +
+  		guides(color = "none") +
+  		ggtitle(paste0("Number of ALL regions: ", nreg, " ; PASSED: ", lpassed, " (", round(100*lpassed/nreg,2), "%) ; FAILED: ", nreg-lpassed, " (", round(100*(nreg-lpassed)/nreg,2), "%)"))
 
-pPCA2 <- ggpca(datT, colvar = grpvar2, cols = rev(ycols), varscale = 2) +
-  facet_wrap(as.formula(paste("~", grpvar2))) +
-  guides(color = FALSE) +
-  ggtitle(paste0("Number of ALL regions: ", nreg, " ; PASSED: ", lpassed, " (", round(100*lpassed/nreg,2), "%) ; FAILED: ", nreg-lpassed, " (", round(100*(nreg-lpassed)/nreg,2), "%)"))
+	pPCA2 <- ggpca(datT, colvar = grpvar2, cols = rev(ycols), varscale = 2) +
+  		facet_wrap(as.formula(paste("~", grpvar2))) +
+  		guides(color = "none") +
+  		ggtitle(paste0("Number of ALL regions: ", nreg, " ; PASSED: ", lpassed, " (", round(100*lpassed/nreg,2), "%) ; FAILED: ", nreg-lpassed, " (", round(100*(nreg-lpassed)/nreg,2), "%)"))
+}
 
 ## Plots
 cat("\nplotting...")
@@ -709,12 +714,13 @@ print(p4)
 print(p5)
 print(p6)
 
-suppressWarnings(print(pPCA1))
-suppressWarnings(print(pPCA2))
+if (plot.pca) {
+	suppressWarnings(print(pPCA1))
+	suppressWarnings(print(pPCA2))
+}
 
 # VENN diagram for regions that passed filters in all considered groups
-if (draw.venn) {
-  
+if (draw.venn) {  
   # get color vector for passed + considered groups
   grlab <- levels(dmerge[,grpvar2])[levels(dmerge[,grpvar1]) %in% gcons]
   grcol <- rev(ycols)[which(grlab %in% levels(dmerge[,grpvar2]))]
@@ -774,6 +780,7 @@ ggplot(dp, aes_string(grpvar2, "ALLREG", fill = "PASSED")) +
   theme(axis.text.y = element_blank()) +
   ggtitle(paste0("Number of ALL regions: ", nreg, " ; PASSED: ", lpassed, " (", round(100*lpassed/nreg,2), "%) ; FAILED: ", nreg-lpassed, " (", round(100*(nreg-lpassed)/nreg,2), "%)"))
 
+
 # Heatmaps
 # length of mapped region
 p7 <- suppressWarnings(do.heatmap(dat = dmerge,       xfac = regvar, yfac = idvar, znum = linbam, ygr = grpvar2, ycols = rev(ycols), limit = p1q[2], sortx = sortx,                     hclustmethod = hclustmethod, low = low, mid = mid, high = high, title = paste("ALL regions,", linbam)))
@@ -812,6 +819,4 @@ cat("\n") ; paste0("Finish time: ", t2)
 
 dlog <- c(dlog, paste0("Finish time: ", t2))
 writeLines(text = dlog, con = logtxt)
-
-
 
