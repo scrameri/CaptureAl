@@ -2,7 +2,7 @@
 Pipeline streamlining analysis of **target enrichment sequencing** data
 
 ### Check Installation
-This repository provides scripts that use third-party software. These sofware tools must be executable from your computing environment:
+This repository provides scripts (see [src](https://github.com/scrameri/CaptureAl/tree/master/src) directory) that use third-party software. These sofware tools must be executable from your computing environment:
 - R and corresponding Rscript (tested on version 3.1.2, 3.6 and 4.0)
 - python (tested on version 2.7.11)
 - java (tested on version 1.8.0_73)
