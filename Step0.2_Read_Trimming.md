@@ -34,3 +34,6 @@ ls -1 fastqc/*_fastqc.zip > samples.fastqc.txt
 plot.fastqc.R samples.fastqc.txt fastqc_trimmed.pdf 18 18
 ```
 You should see on page 10 that the per sequence quality scores have increased slightly, and on page 17 that the adapter content has decreased to very low levels now.
+
+### Next steps
+To get to the next steps, follow the [Read Mapping](https://github.com/scrameri/CaptureAl/blob/master/Step1_Read_Mapping.md) tutorial.
