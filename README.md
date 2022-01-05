@@ -1,5 +1,5 @@
 # CaptureAl Analysis Pipeline
-Pipeline streamlining analysis of **target enrichment sequencing** data
+Pipeline streamlining analysis of **target enrichment sequencing** data. This repository accompanies a scientific paper in review (available [here](https://www.biorxiv.org/content/10.1101/2021.12.07.471551v1)).
 
 ### Download Capture Al scripts
 To understand use this pipeline, clone the [CaptureAl repository](https://github.com/scrameri/CaptureAl) and follow the tutorial provided below. For each step, there is a limited number of scripts that have to be executed, and these scripts often execute other scripts located in the repository.
