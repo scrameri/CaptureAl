@@ -46,3 +46,6 @@ minfrac=0.7  # minimum fraction of samples conforming to the absolute locus filt
 # Visualize coverage analysis and filter loci
 filter.visual.coverages.R mapfile.txt coverage_stats.Q${Q}.txt ${ref} ${minploci} ${minptaxa} ${minlen} ${mincov} ${maxcov} ${minratio} ${minfrac}
 ````
+
+### Next steps
+To get to the next steps, follow the [Read Assembly](https://github.com/scrameri/CaptureAl/blob/master/Step2_Sequence_Mapping.md) tutorial.
