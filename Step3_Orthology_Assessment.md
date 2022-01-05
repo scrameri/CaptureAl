@@ -1,4 +1,4 @@
-# STEP 3: ORTHOLOGY ASSESSMENT
+# Step 3: Orthology Assessment
 
 tbd
 
