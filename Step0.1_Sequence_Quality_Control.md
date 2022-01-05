@@ -61,7 +61,7 @@ This will create subdirectory `fastqc` and write two output files (`*_fastqc.htm
 bsub < bsub.fastqc.sh
 ```
 
-#### Visualize FastQC results as a PDF
+### Visualize FastQC results as a PDF
 
 [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) already provides a visualization of the results via .html files. However, if you work with many samples, you'd need to inspect dozens or hundreds of such files manually. CaptureAl provides a concise visualization of up to hundred or more `*_fastqc.zip` result files, in a single PDF file of 18 pages. Some plots show the distribution of key statistics across all samples, while other plots show detailled statistics on a per-sample basis using `ggplot2` and facets for a direct comparison across samples.
 
@@ -76,3 +76,6 @@ The FastQC plotting function is `plot.fastqc.R`. It's arguments can be seen by e
 ls -1 fastqc/*_fastqc.zip > samples.fastqc.txt
 plot.fastqc.R samples.fastqc.txt fastqc_raw.pdf 18 18
 ```
+
+### Next steps
+To get to the next steps, follow the [https://github.com/scrameri/CaptureAl/blob/master/Step0.2_Read_Trimming.md](Read Trimming) tutorial.
