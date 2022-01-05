@@ -17,4 +17,4 @@ run.dipspades.sh -s samples.txt -r /path/to/extracted-reads/ -t 4
 ```
 
 ### Next steps
-To get to the next steps, follow the [Orthology Assessment](https://github.com/scrameri/CaptureAl/blob/master/Step3_Orthology_Assessment) tutorial.
+To get to the next steps, follow the [Orthology Assessment](https://github.com/scrameri/CaptureAl/blob/master/Step3_Orthology_Assessment.md) tutorial.
