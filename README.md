@@ -2,7 +2,7 @@
 Pipeline streamlining analysis of **target enrichment sequencing** data
 
 ### Download Capture Al scripts
-To understand use this pipeline, clone the [CaptureAl repository](https://github.com/scrameri/CaptureAl) and follow the tutorial provided below.
+To understand use this pipeline, clone the [CaptureAl repository](https://github.com/scrameri/CaptureAl) and follow the tutorial provided below. For each step, there is a limited number of scripts that have to be executed, and these scripts often execute other scripts located in the repository.
 
 ### Check Installation
 This repository provides scripts (see [src](https://github.com/scrameri/CaptureAl/tree/master/src) directory) that use third-party software. These sofware tools must be executable from your computing environment:
