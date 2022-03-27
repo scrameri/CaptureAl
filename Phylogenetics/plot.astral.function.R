@@ -1,16 +1,17 @@
-dt = NULL; astral = TRUE; ladderize = TRUE; print = TRUE; verbose = TRUE;
-root.add = 0.1; tip.add = 0.1; col.edge = "black"; size.edge = 0.25; alpha.edge = 1;
-col.tip = "black"; size.tip = 2.5; adj.tip = -0.02; xmax = 0.3;
-add.support = TRUE; size.support = 2; alpha.support = 1; legend.pos.support = "left";
-supportvar = if (all(pievars %in% colnames(treedata@data))) "pp1" else "support"; supportbreaks = c(0, 50, 80, 95, 99, 101);
-supportlabs = c("< 50%","[50-80)%","[80-95)%", "[95-99)%","[99-100]%");
-supportcols = c("red","orange","yellow","#0096FF","black");
-supportname = if (all(pievars %in% colnames(treedata@data))) "ASTRAL\nPosterior Support" else "Bootstrap Support";
-add.pies = TRUE; width.pie = 0.075; height.pie = width.pie; alpha.pie = 1;
-hjust.pie = 0.05; vjust.pie = 0.05;
-pievars = c("q1","q2","q3"); piecols = c("#4567AD","#EB6533","#CCC0B1")
+# ## debug
+# dt = NULL; astral = TRUE; ladderize = TRUE; print = TRUE; verbose = TRUE;
+# root.add = 0.1; tip.add = 0.1; col.edge = "black"; size.edge = 0.25; alpha.edge = 1;
+# col.tip = "black"; size.tip = 2.5; adj.tip = -0.02; xmax = 0.3;
+# add.support = TRUE; size.support = 2; alpha.support = 1; legend.pos.support = "left";
+# supportvar = if (all(pievars %in% colnames(treedata@data))) "pp1" else "support"; supportbreaks = c(0, 50, 80, 95, 99, 101);
+# supportlabs = c("< 50%","[50-80)%","[80-95)%", "[95-99)%","[99-100]%");
+# supportcols = c("red","orange","yellow","#0096FF","black");
+# supportname = if (all(pievars %in% colnames(treedata@data))) "ASTRAL\nPosterior Support" else "Bootstrap Support";
+# add.pies = TRUE; width.pie = 0.075; height.pie = width.pie; alpha.pie = 1;
+# hjust.pie = 0.05; vjust.pie = 0.05;
+# pievars = c("q1","q2","q3"); piecols = c("#4567AD","#EB6533","#CCC0B1")
 
-
+## function to plot RAxML and ASTAL trees (with node pies)
 plot.treedata <- function(
   treedata, dt = NULL, ladderize = TRUE, print = TRUE, verbose = TRUE,
   root.add = 0.1, tip.add = 0.1, col.edge = "black", size.edge = 0.25, alpha.edge = 1,
