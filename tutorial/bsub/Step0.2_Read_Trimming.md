@@ -37,4 +37,4 @@ You should see on page 10 that the per sequence quality scores have increased sl
 
 
 ### Next steps
-To get to the next steps, follow the [Read Mapping](https://github.com/scrameri/CaptureAl/blob/master/bsub/Step1_Read_Mapping.md) tutorial.
+To get to the next steps, follow the [Read Mapping](https://github.com/scrameri/CaptureAl/blob/master/tutorial/bsub/Step1_Read_Mapping.md) tutorial.
