@@ -48,4 +48,4 @@ filter.visual.coverages.R mapfile.txt coverage_stats.Q${Q}.txt ${ref} ${minploci
 ````
 
 ### Next steps
-To get to the next steps, follow the [Read Assembly](https://github.com/scrameri/CaptureAl/blob/master/bsub/Step2_Sequence_Assembly.md) tutorial.
+To get to the next steps, follow the [Read Assembly](https://github.com/scrameri/CaptureAl/blob/master/tutorial/bsub/Step2_Sequence_Assembly.md) tutorial.
