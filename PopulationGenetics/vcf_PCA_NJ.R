@@ -14,7 +14,7 @@ source("HELPERFUNCTIONS.R")
 
 ## Create genind object from VCF file of filtered SNPs
 # read vcf
-input <- "Dalbergia_51_2396_116500.filtered.vcf" # 116,500 variants after variant filtering
+input <- "data/Dalbergia_51_2396_116500.filtered.vcf" # 116,500 variants after variant filtering
 dd <- read.vcfR(file = input)
 
 # heterozygosity
