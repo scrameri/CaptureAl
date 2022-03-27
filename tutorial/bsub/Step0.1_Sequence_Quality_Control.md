@@ -78,4 +78,4 @@ plot.fastqc.R samples.fastqc.txt fastqc_raw.pdf 18 18
 ```
 
 ### Next steps
-To get to the next steps, follow the [Read Trimming](https://github.com/scrameri/CaptureAl/blob/master/bsub/Step0.2_Read_Trimming.md) tutorial.
+To get to the next steps, follow the [Read Trimming](https://github.com/scrameri/CaptureAl/blob/master/tutorial/bsub/Step0.2_Read_Trimming.md) tutorial.
