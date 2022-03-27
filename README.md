@@ -22,9 +22,7 @@ This repository provides scripts (see [src](https://github.com/scrameri/CaptureA
 - freebayes (tested on version 1.3.4)
 
 ### Overview
-[CaptureAl.pdf](https://github.com/scrameri/CaptureAl/files/8354668/CaptureAl.pdf)
-
-![CaptureAl.pdf](https://github.com/scrameri/CaptureAl/blob/main/CaptureAl.pdf?raw=true)
+![CaptureAl.png](https://github.com/scrameri/CaptureAl/blob/main/CaptureAl.png)
 
 ### Parallel Computing
 Depending on your computing environment, there is the **GNU parallel** solution and the **BSUB solution** to run the analysis steps for many samples or loci in parallel. The first uses the GNU command `parallel` and is suitable for execution on clusters or personal computers, and the second uses the `bsub` command and is suitable for execution on large high-performance clusters. In each case, multiple so-called jobs are distributed and executed on different computing nodes.
