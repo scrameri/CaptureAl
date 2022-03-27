@@ -1,16 +1,18 @@
 ## Read quality-trimming and quality-filtering
-Raw paired-end reads with the indicated file extensions (`-x` option) located in `$rawreads` (`-r` option) were quality-trimmed and quality-filtered using trimmomatic version 0.32 (Bolger et al., 2014). Specifically, we used `ILLUMINACLIP` with an adapter sequence file containing NEBNext, TRUSEQ and Illumina adaptor sequences (`-a` option), a seed mismatch of 2, a palindrome clip threshold of 20, a simple clip threshold of 10, a minimum adapter length of 10, while keeping both reads. Leading and trailing bases of each read were removed if the quality was below 5. Sliding window trimming was performed using a window size of 4 and a required average quality of 15. Quality-trimmed reads shorter than 50 bases were removed. The following script executed trimmomatic as specified above, for 20 samples in parallel: 
+Raw paired-end reads with the indicated file extensions (`-x` option) located in `raw` (`-r` option) were quality-trimmed and quality-filtered using trimmomatic version 0.32 (Bolger et al., 2014). Specifically, we used `ILLUMINACLIP` with an adapter sequence file containing NEBNext, TRUSEQ and Illumina adaptor sequences (`-a` option), a seed mismatch of 2, a palindrome clip threshold of 20, a simple clip threshold of 10, a minimum adapter length of 10, while keeping both reads. Leading and trailing bases of each read were removed if the quality was below 5. Sliding window trimming was performed using a window size of 4 and a required average quality of 15. Quality-trimmed reads shorter than 50 bases were removed. The following script executed trimmomatic as specified above, for 20 samples in parallel: 
 
 ```
-trim.fastq.sh -s samples.fabaceae.12.txt -a illumina.truseq.indexing.adaptors -r raw -x '_R1.fastq.gz,_R2.fastq.gz' -t 20
+mkdir trimmed
+cd trimmed
+trim.fastq.sh -s samples.fabaceae.12.txt -a illumina.truseq.indexing.adaptors -r ../raw -x '_R1.fastq.gz,_R2.fastq.gz' -t 20
 ```
 
-The quality of raw and trimmed reads was assessed with FASTQC version 0.11.5 (https://www.bioinformatics.babraham.ac.uk/projects/fastqc).
+The quality of raw and trimmed reads was assessed with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc) version 0.11.5.
 
-Executed command-line scripts and parameter choices for steps 1–7 and iterations 1–2
-The following tables and sections track the executed pipeline scripts and chosen parameters at each analysis step. 
+## Executed command-line scripts and parameter choices for steps 1–7 and iterations 1–2
+The following sections track the executed pipeline scripts and chosen parameters at each analysis step. 
 
-Step 1: Read mapping
+### Step 1: Read mapping
 We ran BWA version 0.7.12-r1039 (Li & Durbin, 2009) and BWA-MEM in the $mappingdir directory, using the quality-trimmed and quality-filtered reads with the indicated file extensions (-e option, comma-separated string denoting file extensions of forward and reverse reads, respectively) located in the $trimmedreads directory (-d option), and the respective reference sequences for each taxon set and iteration (-r option). The script outputs reads with a minimum alignment score of $T (-T option), marks secondary hits, and only retains reads with a minimum mapping quality of $Q (-Q option) in the final SAM files before compressing them to BAM format. An early filtering of target regions with inadequate coverage across samples prevents time-consuming sequence assembly of target regions that would likely be filtered out in step 4. Computations were performed for all samples specified in $s (-s option) using 4 times 5 threads in parallel (-t option) as follows:
 
 run.bwamem.sh -s $s -r $1 -e $e -T $T -Q $Q -d $trimmedreads -t 4
@@ -26,7 +28,7 @@ filter.visual.coverages.R $2 coverage_stats.txt $1 $3 $4 $5 $6 $7 $8 $9
 
 This script visualized the coverage statistics as violin plots and heatmaps (see Figures S5 and S6 for results of the second iteration), and saved a list of kept samples ($s) as well as a list of kept regions ($l) for sequence assembly.
 
-Step 2: Sequence assembly
+### Step 2: Sequence assembly
 We extracted read pairs from quality-filtered and quality-trimmed reads located in the $trimmedreads directory (-d option). The -s and -l parameters are used to pass the list of samples and loci (target regions) to be processed in parallel, respectively. This step was carried out on a local scratch ($extractedreads directory) using 20 parallel threads (-t option). At least one of the two reads per extracted read pair mapped to a retained target region with a minimum mapping quality of 10 (-Q option):  
 
 extract.readpairs.sh -s $s -l $l -d $trimmedreads -m $mappingdir -Q $Q -t 20
@@ -35,7 +37,7 @@ We assembled the extracted reads located in the $extractedreads directory (-r op
 
 run.dipspades.sh -s $s -r $extractedreads -t 20
 
-Step 3: Orthology assessment
+### Step 3: Orthology assessment
 We ran EXONERATE version 2.2 for each sample and each retained target region (-l option) with the ‘affine:local’ and ‘exhaustive’ options, using the contigs located in the $assemblies directory (-d option) as query sequences and the target regions (-r option) as target sequences. We stored alignment statistics of all consensus contigs that aligned to the same target region in the $exonerate directory (-d option), but limited the report to the best alignment per contig as follows:
 
 select.best.contigs.per.locus.sh -s $s -l $l -r $1 -d $assemblies -t 20
@@ -54,14 +56,14 @@ plot.contig.numbers.R loci_contignumbers.txt $2
 
 This produced Figures S7c and S8c.
 
-Step 4: sample and region filtering
+### Step 4: sample and region filtering
 We implemented nine filtering criteria to identify target regions with adequate assembly quality across the taxon groups specified in $2. The first two filters take absolute thresholds and aim to remove poorly assembled samples or target regions: $11 minimum fraction of regions with at least one contig in a sample (filters samples), $12 minimum fraction of samples with at least one contig in a region (filters target regions). The next five filters take thresholds that need to be met in a specified fraction of samples in each considered taxon group: $13 maximum number of non-zero (fragments combined) contigs in a target region, $14 minimum normalized EXONERATE alignment score, $15 minimum EXONERATE alignment length, $16 minimum alignment fraction (EXONERATE alignment length divided by target region length), $17 minimum raw EXONERATE alignment score, $18 minimum contig length. $19 is the minimum fraction of samples in each taxon group that need to pass each filter in order to keep a certain target region.
 
 filter.visual.assemblies.R $2 loci_stats.txt $1 $11 $12 $13 $14 $15 $16 $17 $18 $19
 
 This produced Figures S7 and S8 (panels a,b and d), among others.
 
-Step 5: Target region alignment and alignment trimming
+### Step 5: Target region alignment and alignment trimming
 We generated multifasta files in the $multifasta directory for all retained target regions, containing all retained contigs and samples as follows:
 
 taxa=taxa_kept-$11.txt
@@ -80,7 +82,7 @@ Internal trimming was carried out by first removing any alignment site with nucl
 
 trim.alignments.parallel.sh -s $2 -d $endtrimmed -c 0.4 -z 20 -n 0.5 -S 1 -t 20 -v
 
-Step 6: Merge overlapping alignments
+### Step 6: Merge overlapping alignments
 We calculated a consensus sequence for each end-trimmed and internally trimmed alignment located in the directory $trimmed, using a minimum allele frequency of 1 (-m option) to call IUPAC ambiguity and a minimum base frequency of 0.01 (-b option) to return a consensus instead of a gap. This parameter combination ensured that the most frequent allele was called at each alignment site rather than IUPAC ambiguity codes or gaps. If two alleles were equally frequent at any alignment site, one was randomly sampled to represent the consensus. The -g flag ensured that gaps were removed from the final consensus sequence, and the -n flag ensured that completely ambiguous consensus bases (Ns) were removed from the final consensus sequence. The -v flag triggered visualization of the consensus calculation:
 
 get.consensus.from.alignment.parallel.sh -s $taxa -d $trimmed -m 1 -b 0.01 -t 20 -gnv
@@ -110,7 +112,7 @@ trim.alignment.ends.parallel.sh -s $s -d $merged -c 0.5 -n 0.25 -t 20 -v
 trim.alignments.parallel.sh -s $s -d $merged -c 0.4 -z 20 -n 0.5 -S 1 -t 20 -v
 replace.overlapping.alignments.R $trimmed $merged $overlaps
 
-Step 7: Create representative reference sequences
+### Step 7: Create representative reference sequences
 Sets of reference consensus sequences for different taxon groups were generated, combined, aligned, and a group consensus was derived as follows:
 
 get.group.consensus.sh -s $2 -d $trimmed -m 1 -b 0.01 -z ".all.aln.etr.itr.cons" -t 20 -gnv
