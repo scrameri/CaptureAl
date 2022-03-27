@@ -8,5 +8,8 @@ To use this pipeline, clone the [CaptureAl repository](https://github.com/scrame
 1) Follow the [installation instructions](https://github.com/scrameri/CaptureAl/blob/master/Install.md).
 2) Determine how to implement [parallel computing](https://github.com/scrameri/CaptureAl/blob/master/Parallelize.md)
 
+### Get started
+Once the installation is complete, follow the tutorial step by step by viewing the numbered `.md` files, starting with [Sequence Quality Control](https://github.com/scrameri/CaptureAl/blob/master/Step0.1_Sequence_Quality_Control.md). Each step contains a link to the next step.
+
 ### Graphical overview
 ![CaptureAl.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/CaptureAl.png)
