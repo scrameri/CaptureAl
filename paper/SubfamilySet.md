@@ -34,11 +34,13 @@ The first two filters take absolute thresholds and aim to remove poorly sequence
 - `0.2` = `min.pregion` = minimum fraction of regions with at least one mapped read in a sample (filters samples)
 - `0.3` = `min.ptaxa`   = minimum fraction of samples with at least one mapped read in a region (filters target regions).
 
-The next four filters take thresholds that need to be met in a specified fraction of samples in each considered taxon group:
+The next four filters take thresholds...
 - `min.len`    =    1 : minimum BWA-MEM alignment length
 - `min.cov`    =    6 : minimum average coverage in the aligned region
 - `max.cov`    = 1000 : maximum average coverage in the aligned region
 - `min.ratio`  =    0 : minimum alignment fraction (BWA-MEM alignment length divided by target region length)
+
+...that need to be met in a specified fraction of samples in each considered taxon group:
 - `min.frac`   =  0.3 : minimum fraction of samples in each taxon group that need to pass each filter in order to keep a certain target region.
 
 ```
@@ -98,13 +100,15 @@ The first two filters take absolute thresholds and aim to remove poorly assemble
 - `min.pregion`       =  0.2 : minimum fraction of regions with at least one contig in a sample (filters samples)
 - `min.pcontig`       =  0.5 : minimum fraction of samples with at least one contig in a region (filters target regions).
 
-The next five filters take thresholds that need to be met in a specified fraction of samples in each considered taxon group:
+The next six filters set the thresholds...
 - `max.ncontigs`      =    2 : maximum number of non-zero (fragments combined) contigs in a target region
 - `min.bestscore.norm =    2 : minimum normalized EXONERATE alignment score
 - `min.taln`          =   80 : minimum EXONERATE alignment length
 - `min.tfrac`         =    0 : minimum alignment fraction (EXONERATE alignment length divided by target region length)
 - `min.bestscore`     =    1 : minimum raw EXONERATE alignment score
 - `min.bestlength`    =    1 : minimum contig length.
+
+... that need to be met in a specified fraction of samples in each considered taxon group:
 - `min.frac`          =  0.5 : minimum fraction of samples in each taxon group that need to pass each filter in order to keep a certain target region.
 
 ```
