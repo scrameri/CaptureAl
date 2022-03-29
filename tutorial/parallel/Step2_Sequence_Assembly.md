@@ -19,14 +19,22 @@ extract.readpairs.sh -s <sample file> -l <locus file> -d <directory> -m <directo
 # Required
 -s sample file
 -l locus file
+-d  []  absolute path to folder with quality-filtered reads
+-m  []  absolute path to folder with mapping dirs
 
 # Optional
--d absolute path to folder with quality-filtered reads
--m absolute path to folder with mapping dirs
--o output directory (created if inexistent)
--Q mapping quality
--b path to BAM file (<SAMPLE> can be part of the string and will be replaced by the actual sample using regex)
--t number of threads used
+
+-o  [seq-extracted] output directory (created if inexistent)
+-Q  [10]            minimum mapping quality, as used for mapping using run.bwamem.sh
+-b  [see details]   regex-path to BAM file. Use SAMPLE as wildcard.
+-t  [2]             number of threads used
+```
+
+**Details**
+```
+-b    <SAMPLE> can be part of the string and will be replaced by the actual sample using regex,
+      DEFAULT: <${mapdir}/SAMPLE/SAMPLE.bwa-mem.sorted.Q10.nodup.bam>."
+
 ```
 
 **Depends on**
@@ -37,7 +45,8 @@ extract-reads-from-fastq.pl
 
 **Example**
 ```
-extract.readpairs.sh -s samples.txt -l loci.txt -d NovaSeq-run1_trimmed -m NovaSeq-run1_mapped -b NovaSeq-run1_mapped/SAMPLE/SAMPLE.bwa-mem.sorted.Q10.nodup.bam -Q 10 -t 20
+extract.readpairs.sh -s samples.txt -l loci.txt -d NovaSeq-run1_trimmed -m NovaSeq-run1_mapped \
+                     -b NovaSeq-run1_mapped/SAMPLE/SAMPLE.bwa-mem.sorted.Q10.nodup.bam -Q 10 -t 20
 ```
 
 ## 2) run.dipspades.sh
