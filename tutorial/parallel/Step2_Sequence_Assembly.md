@@ -22,8 +22,7 @@ extract.readpairs.sh -s <sample file> -l <locus file> -d <directory> -m <directo
 -d  []  absolute path to folder with quality-filtered reads
 -m  []  absolute path to folder with mapping dirs
 
-# Optional
-
+# Optional [DEFAULT]
 -o  [seq-extracted] output directory (created if inexistent)
 -Q  [10]            minimum mapping quality, as used for mapping using run.bwamem.sh
 -b  [see details]   regex-path to BAM file. Use SAMPLE as wildcard.
@@ -59,11 +58,12 @@ run.dipspades.sh -s <sample file> -r <directory> -t <integer>
 **Arguments**
 ```
 # Required
--s sample file (will look for extracted reads inside ${name}.targets)
--r absolute path to extracted read pairs
+-s          Sample file (will look for extracted reads of samples in ${r}/${sample}.targets)
+-r          Absolute path to extracted read pairs
 
-# Optional
--t number of threads [DEFAULT: 15]: the parallelization is over reference sequences, not over individuals (these are assembled one after the other)
+# Optional [DEFAULT]
+-t    [15]  Number of parallel threads: the parallelization is over reference sequences,
+            not over individuals (these are assembled one after the other)
 ```
 
 **Depends on**
