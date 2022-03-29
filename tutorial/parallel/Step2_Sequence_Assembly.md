@@ -37,7 +37,7 @@ extract-reads-from-fastq.pl
 
 **Example**
 ```
-extract.readpairs.sh -s samples.txt -l loci.txt -d NovaSeq-run1_trimmed -m NovaSeq-run1_mapped -Q 10 -t 20
+extract.readpairs.sh -s samples.txt -l loci.txt -d NovaSeq-run1_trimmed -m NovaSeq-run1_mapped -b NovaSeq-run1_mapped/SAMPLE/SAMPLE.bwa-mem.sorted.Q10.nodup.bam -Q 10 -t 20
 ```
 
 ## 2) run.dipspades.sh
