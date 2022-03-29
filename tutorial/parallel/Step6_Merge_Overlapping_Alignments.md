@@ -189,22 +189,34 @@ align.overlapping.contigs.sh -l <file> -c <directory> -m <string> -t <positive i
 **Arguments**
 ```
 # Required
-
-
+-l                 Path with list of regions to be merged. Usually the output of find.overlapping.alignments.R,
+                   which produces a file ending in '.blast.filtered.list'.
+-c                 Path to directory with multifasta files, containing FASTA files with unaligned contigs.
 
 # Optional
+-m  ['localpair']  Alignment model. Passed on to mafft.
+-x  ['']           Prefix of sequence name in input file (-l option) but missing in multifasta sequence names.
+-y  ['']           Suffix of sequence name in input file (-l option) but missing in multifasta sequence names.
+-t  [4]            Number of parallel threads.
+```
 
+**Details**
+```
+This script creates an output directory of the form 'mafft.overlapping.${N}', where ${N} is the number of 
+overlapping alignments passed with -l.
 ```
 
 **Depends on**
 ```
-
+mafft
+awk
+get.overlap.consensus.R
 ```
 
 
 **Example**
 ```
-align.overlapping.contigs.sh -l $overlaps -c $multifasta -m 'localpair' -t 20
+align.overlapping.contigs.sh -l consensus.blast.filtered.list -c multifasta.63.2396 -m 'localpair' -t 20
 ```
 
 ## 6) filter.merged.alignments.sh
@@ -217,53 +229,67 @@ filter.merged.alignments.sh -d <directory> -s <numeric fraction>
 **Arguments**
 ```
 # Required
-
-
+-d          Path to directory with merged alignments.
 
 # Optional
+-s  [0.95]  Minimum alignment score [between 0 and 1]. Overlapping alignments will only be retained if the
+            merging procedure in `align.overlapping.contigs.sh` was successful, as indicated by the 
+            visualizations and/or the alignment score.
+```
 
+**Details**
+```
+This script filters merged alignments by moving unsuccessfully merged alignments to a separate subdirectory.
 ```
 
 **Depends on**
 ```
-
+--
 ```
 
 
 **Example**
 ```
-filter.merged.alignments.sh -d $merged -s $20
+filter.merged.alignments.sh -d mafft.overlapping.15 -s 0.95
 ```
+
+
+## Apply trimming as in [Step 5](Step5_Alignment_and_Alignment_Trimming.md)
+
 
 ## 7) replace.overlapping.alignments.R
 
 **Usage**
 ```
-trim.alignment.ends.parallel.sh -s $2 -d $merged -c 0.5 -n 0.25 -t 20 -v
-trim.alignments.parallel.sh -s $2 -d $merged -c 0.4 -z 20 -n 0.5 -S 1 -t 20 -v
 replace.overlapping.alignments.R <directory> <directory> <file>
-
 ```
 
 **Arguments**
 ```
 # Required
-
-
-
+1) <alndir|CHR>:     path to directory with overlapping fasta alignments to be replaced (mafft.NIND.NLOC.Y) ; 
+2) <mrgdir|CHR>:     path to directory with corresponding merged (and filtered) fasta alignments ('mafft.overlapping.X.Y') ;
+3) <mrglist|CHR>:    path to overlapping loci list ('mafft.NIND.NLOC.Y.consZ.vs.self.blast.filtered.list') ;
+       
 # Optional
+4) <revert|BOOLEAN>: if TRUE, will revert any previous filtering applied [DEFAULT: TRUE]
+```
 
+**Details**
+```
+This script replaces overlapping alignments in the first directory with filtered merged alignments in the
+second directory.
 ```
 
 **Depends on**
 ```
-
+--
 ```
 
 
 **Example**
 ```
-replace.overlapping.alignments.R $trimmed $merged $overlaps
+replace.overlapping.alignments.R mafft.63.2396.c0.5.d0.25.c0.4.n0.5 mafft.overlapping.15 consensus.blast.filtered.list
 ```
 
 ## Continue
