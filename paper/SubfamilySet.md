@@ -118,7 +118,7 @@ The next six filters set the thresholds...
 filter.visual.assemblies.sh -s mapfile.fabaceae.12.txt -t loci_stats.txt -r Cajanus_cajan_6555reg.fasta -a 0.2 -b 0 -c 0.5 -d 2 -e 2 -f 80 -g 0 -h 1 -i 1 -p 0.5
 ```
 
-This script visualized the assembly statistics as violin plots and heatmaps (see panels a, b and d of Figures S7 and S8 for results of the second iteration), and saved a list of kept samples (`taxa=taxa_kept-*.txt`) as well as a list of kept target regions (`regions_kept-*.txt`) for sequence alignment.
+This script visualized the assembly statistics as violin plots and heatmaps (see panels a, b and d of Figure S7 results of the second iteration), and saved a list of kept samples (`taxa=taxa_kept-*.txt`) as well as a list of kept target regions (`regions_kept-*.txt`) for sequence alignment.
 
 
 ### Step 5: Target region alignment and alignment trimming
