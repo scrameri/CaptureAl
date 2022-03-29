@@ -11,7 +11,7 @@
 
 **Usage**
 ```
-get.consensus.from.alignment.parallel.sh -s $taxa -d $trimmed -m 1 -b 0.01 -t 20 -gnv
+get.consensus.from.alignment.parallel.sh -s <file> -d <directory> -m <positive integer> -b <positive numeric> -t <positive integer> -gnv
 ```
 
 **Arguments**
@@ -39,7 +39,7 @@ get.consensus.from.alignment.parallel.sh -s $taxa -d $trimmed -m 1 -b 0.01 -t 20
 
 **Usage**
 ```
-rename.fasta.headers.R $cons ".all.aln.etr.itr" FALSE FALSE
+rename.fasta.headers.R <file> <string> <BOOLEAN> <BOOLEAN>
 ```
 
 **Arguments**
@@ -67,7 +67,7 @@ rename.fasta.headers.R $cons ".all.aln.etr.itr" FALSE FALSE
 
 **Usage**
 ```
-blast.vs.self.sh $cons
+blast.vs.self.sh <file>
 ```
 
 **Arguments**
@@ -95,7 +95,7 @@ blast.vs.self.sh $cons
 
 **Usage**
 ```
-find.overlapping.alignments.R $cbase.vs.self.blast.filtered TRUE 'LG_' '_'
+find.overlapping.alignments.R <file> <BOOLEAN> <string> <string>
 ```
 
 **Arguments**
@@ -123,7 +123,7 @@ find.overlapping.alignments.R $cbase.vs.self.blast.filtered TRUE 'LG_' '_'
 
 **Usage**
 ```
-align.overlapping.contigs.sh -l $overlaps -c $multifasta -m 'localpair' -t 20
+align.overlapping.contigs.sh -l <file> -c <directory> -m <string> -t <positive integer>
 ```
 
 **Arguments**
@@ -151,7 +151,7 @@ align.overlapping.contigs.sh -l $overlaps -c $multifasta -m 'localpair' -t 20
 
 **Usage**
 ```
-filter.merged.alignments.sh -d $merged -s $20
+filter.merged.alignments.sh -d <directory> -s <numeric fraction>
 ```
 
 **Arguments**
@@ -181,7 +181,7 @@ filter.merged.alignments.sh -d $merged -s $20
 ```
 trim.alignment.ends.parallel.sh -s $2 -d $merged -c 0.5 -n 0.25 -t 20 -v
 trim.alignments.parallel.sh -s $2 -d $merged -c 0.4 -z 20 -n 0.5 -S 1 -t 20 -v
-replace.overlapping.alignments.R $trimmed $merged $overlaps
+replace.overlapping.alignments.R <directory> <directory> <file>
 
 ```
 
