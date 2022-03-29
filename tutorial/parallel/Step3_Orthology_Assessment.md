@@ -22,7 +22,7 @@ select.best.contigs.per.locus.sh -s <file> -l <file> -r <file> -d <director<> -t
 -r  FASTA file with reference sequences
 -d  path to input directory with assembled contigs
 
-# Optional
+# Optional [DEFAULT]
 -c  [see details]       regex path from input directory to contigs. Use 'SAMPLE' and 'LOCUS' as wildcards.
 -g  [off]               FLAG, if given, will NOT write query and target ranges to .exonerate output> [DEFAULT: --]
 -m  ['affine:local']    alignment model [DEFAULT: `affine:local`]
@@ -82,10 +82,10 @@ combine.contigs.parallel.sh -s <file> -d <directory> -a <integer> -c <integer> -
 -s  .txt file with sample names (without header or '>')
 -d  path to directory with exonerate results
 
-# Optional
--a  minimum target alignment length [DEFAULT: 80]
--c  minimum normalized alignment score [DEFAULT: 2]
--t  number of threads [DEFAULT: 4]
+# Optional [DEFAULT]
+-a  [80]    minimum target alignment length (bp).
+-c   [2]    minimum normalized alignment score (i.e., raw score divided by target alignment length).
+-t   [4]    number of parallel threads.
 
 ```
 
@@ -113,7 +113,7 @@ collect.exonerate.stats.R <sample file> <OPTIONAL: directory> <OPTIONAL: string>
 # Required
 1) <sfile|CHR>:  path to sample file containing paths to mapping directories
 
-# Optional (if one is given, all must be given in this order)
+# Optional [DEFAULT] (if one or more is given, they must be given in this order)
 2) <dir|CHR>:    folder with subdirectories for each sample [DEFAULT: current directory ]
 3) <suffix|CHR>: sample suffix present in <sfile> and absent in <dir> subdirectories  [DEFAULT: '']
 ```
@@ -136,7 +136,7 @@ plot.contig.numbers.R <contig number file> <taxon group file>
 # Required
 1) <file|CHR>: path to collected contig numbers (loci_contignumbers.txt)
 
-# Optional
+# Optional [DEFAULT] (if one or more is given, they must be given in this order)
 2) <meta|CHR>: path to metadata file mapping individuals (1st column) to groups (2nd column). Header and tab separation expected. More individuals in different order than in <file> are ok.
 ```
 
