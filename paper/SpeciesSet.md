@@ -203,7 +203,7 @@ The resulting FASTA file `$newref` was renamed according to the taxon set and nu
 
 ```
 rename.fasta.headers.R $newref ".cons.aln" FALSE FALSE
-mv $newref Dalbergia_iter1_2468reg.fasta
+mv $newref Dalbergia_iter1_3736reg.fasta
 ```
 
 
@@ -255,14 +255,14 @@ plot.contig.numbers.R loci_contignumbers.txt mapfile.dalbergia.txt
 
 ### Step 4: sample and region filtering
 ```
-filter.visual.assemblies.sh -s mapfile.dalbergia.txt -t loci_stats.txt -r Dalbergia_iter1_3736reg.fasta -a 0.2 -b 0 -c 0.75 -d 2 -e 2 -f 80 -g 0 -h 1 -i 1 -p 0.5
+filter.visual.assemblies.sh -s mapfile.dalbergia.txt -t loci_stats.txt -r Dalbergia_iter1_3736reg.fasta -a 0.7 -b 0 -c 0.85 -d 2 -e 2 -f 80 -g 0 -h 1 -i 1 -p 0.7
 ```
 
 
 ### Step 5: Target region alignment and alignment trimming
 ```
-taxa=taxa_kept-0.2.txt
-regions=regions_kept-0.2-0-0.75-2-2-80-0.5.txt
+taxa=taxa_kept-0.7.txt
+regions=regions_kept-0.7-0-0.85-2-2-80-0.7.txt
 
 create.multifastas.parallel.sh -s $taxa -l $regions -d $exonerate -t 20
 ```
@@ -312,3 +312,5 @@ get.group.consensus.sh -s mapfile.dalbergia.txt -d $trimmed -m 1 -b 0.01 -z ".al
 rename.fasta.headers.R $newref ".cons.aln" FALSE FALSE
 mv $newref consDalbergia_4c_2396.fasta 
 ```
+
+The sequences in `consDalbergia_4c_2396.fasta` were used to extract 6190 corresponding probe sequences (`Dalbergia2396_6190probes_2396reg.fasta`, see [script](https://github.com/scrameri/CaptureAl/blob/master/ProbeSets/extract_probes.R)) and as reference for population genomic analyses of the population set.
