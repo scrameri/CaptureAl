@@ -15,6 +15,5 @@ This is the tutorial implementing the **GNU parallel** version. Click [here](htt
 7) [Step 7: Create Representative Reference Sequences](Step7_Create_Representative_Reference_Sequences.md)
 
 ### Post-processing alignments and mapped reads
-in prep.
-1) Phylogenetics
-2) Population Genetics
+1) [Phylogenetics](https://github.com/scrameri/CaptureAl/tree/master/Phylogenetics)
+2) [Population Genetics](https://github.com/scrameri/CaptureAl/tree/master/PopulationGenetics)
