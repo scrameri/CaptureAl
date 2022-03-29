@@ -315,4 +315,4 @@ rename.fasta.headers.R $newref ".cons.aln" FALSE FALSE
 mv $newref consDalbergia_4c_2396.fasta 
 ```
 
-The sequence names in `consDalbergia_4c_2396.fasta` were used to extract 6190 corresponding probe sequences (`Dalbergia2396_6190probes_2396reg.fasta`, see [script](https://github.com/scrameri/CaptureAl/blob/master/ProbeSets/extract_probes.R)). The 2396 sequences were used as reference for population genomic analyses of the population set.
+The sequence names in `consDalbergia_4c_2396.fasta` were used to extract 6190 corresponding probe sequences (`Dalbergia2396_6190probes_2396reg.fasta`, see [script](ProbeSets/extract_probes.R)). The 2396 sequences were used as reference for population genomic analyses of the population set.
