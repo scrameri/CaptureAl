@@ -128,16 +128,16 @@ attach.probeseqs <- function(df, df.merged, df.probes, f, gff, verbose = TRUE) {
 
 
 ## Read 12049 probe sequences (used for target capture in the lab)
-p <- read.FASTA("Cajanus_cajan_12049probes_6555reg.fasta")
-df.merged <- df.merged.orig <- read.csv2("Cajanus_cajan_6555reg.csv")
+p <- read.FASTA("fasta/Cajanus_cajan_12049probes_6555reg.fasta")
+df.merged <- df.merged.orig <- read.csv2("fasta/Cajanus_cajan_6555reg.csv")
 
 ## Read 1005 / 2396 reference sequences (used to map against)
-f.subfamily <- read.FASTA("consFabaceae_4c_1005.fasta")
-f.species <- read.FASTA("consDalbergia_4c_2396.fasta")
+f.subfamily <- read.FASTA("fasta/consFabaceae_4c_1005.fasta")
+f.species <- read.FASTA("fasta/consDalbergia_4c_2396.fasta")
 
 ## Read Supplementary Tables (will attach probe sequences to these tables)
-d.subfamily <- d.subfamily.orig <- data.frame(readxl::read_excel("../Tables/MER-21-0599_SupplementaryTables_S6-S9.xlsx", sheet = "TableS6", skip = 3))
-d.species <- d.species.orig <- data.frame(readxl::read_excel("../Tables/MER-21-0599_SupplementaryTables_S6-S9.xlsx", sheet = "TableS7", skip = 3))
+d.subfamily <- d.subfamily.orig <- data.frame(readxl::read_excel("tables/MER-21-0599_SupplementaryTables_S6-S9.xlsx", sheet = "TableS6", skip = 3))
+d.species <- d.species.orig <- data.frame(readxl::read_excel("tables/MER-21-0599_SupplementaryTables_S6-S9.xlsx", sheet = "TableS7", skip = 3))
 
 ## Read genome annotation (takes time)
 # gff <- read.gff("ncbi-genomes-2019-01-28/GCF_000340665.1_C.cajan_V1.0_genomic.gff", na.strings = c(".", "?"))
@@ -197,8 +197,8 @@ stopifnot(all(probe_names.subfamily %in% names(p)),
 length(p.subfamily <- p[probe_names.subfamily]) # 3273 (3139 not considering merging in step 0 ; 2558 not considering merging in step 7)
 length(p.species <- p[probe_names.species]) # 6190 (6036 not considering merging in step 0 ; 5097 not considering merging in step 7)
 
-write.FASTA(p.subfamily, paste0("Fabaceae1005_", length(p.subfamily), "probes_", nrow(res.subfamily$df), "reg.fasta"))
-write.FASTA(p.species, paste0("Dalbergia2396_", length(p.species), "probes_", nrow(res.species$df), "reg.fasta"))
+write.FASTA(p.subfamily, paste0("fasta/Fabaceae1005_", length(p.subfamily), "probes_", nrow(res.subfamily$df), "reg.fasta"))
+write.FASTA(p.species, paste0("fasta/Dalbergia2396_", length(p.species), "probes_", nrow(res.species$df), "reg.fasta"))
 
 ## Overlap
 (m.over <- length(intersect(res.species$df$ID, res.subfamily$df$ID))) # 726 overlap in merged regions
