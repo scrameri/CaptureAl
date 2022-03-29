@@ -11,7 +11,7 @@
 
 **Usage**
 ```
-select.best.contigs.per.locus.sh -s $s -l $l -r $1 -d $assemblies -t 20
+select.best.contigs.per.locus.sh -s <file> -l <file> -r <file> -d <director<> -t <integer>
 ```
 
 **Arguments**
@@ -23,26 +23,37 @@ select.best.contigs.per.locus.sh -s $s -l $l -r $1 -d $assemblies -t 20
 -d  path to input directory with assembled contigs
 
 # Optional
--c  path from input directory to contigs, will replace 'SAMPLE' and 'LOCUS' with the respective strings
-    [DEFAULT: `SAMPLE.dipspades/extracted_reads_SAMPLE.fastq.LOCUS.ids.spades/dipspades/consensus_contigs.fasta`]
--g  FLAG, if given, will NOT write query and target ranges to .exonerate output> [DEFAULT: --]
--m  alignment model [DEFAULT: `affine:local`]
--t  number of threads [DEFAULT: 15]
+-c  [see details]       regex path from input directory to contigs. Use 'SAMPLE' and 'LOCUS' as wildcards.
+-g  [off]               FLAG, if given, will NOT write query and target ranges to .exonerate output> [DEFAULT: --]
+-m  ['affine:local']    alignment model [DEFAULT: `affine:local`]
+-t  [15]                number of parallel threads.
 
 
 ```
 
 **Details**
 ```
-# EXONERATE gapped alignment options
-- affine:global
-This performs gapped global alignment, similar to the Needleman-Wunsch algorithm, except with affine gaps. Global alignment requires that both the sequences in their entirety are included in the alignment.
+# Path from input directory to contigs FASTA file
+-c          The default setting assumes the following file naming convention (optimized for assembly using SPAdes):
+            `SAMPLE.dipspades/extracted_reads_SAMPLE.fastq.LOCUS.ids.spades/dipspades/consensus_contigs.fasta`
 
-- affine:bestfit
-This performs a best fit or best location alignment of the query onto the target sequence. The entire query sequence will be included in the alignment, but only the best location for its alignment on the target sequence.
+# EXONERATE gapped alignment options (from https://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate-manual)
+-m          affine:global
+            
+            This performs gapped global alignment, similar to the Needleman-Wunsch algorithm, except with affine
+            gaps. Global alignment requires that both the sequences in their entirety are included in the alignment.
 
-- affine:local
-This is local alignment with affine gaps, similar to the Smith-Waterman-Gotoh algorithm. A general-purpose alignment algorithm. As this is local alignment, any subsequence of the query and target sequence may appear in the alignment.
+            affine:bestfit
+
+            This performs a best fit or best location alignment of the query onto the target sequence.
+            The entire query sequence will be included in the alignment, but only the best location for its
+            alignment on the target sequence.
+
+            affine:local
+               
+            This is local alignment with affine gaps, similar to the Smith-Waterman-Gotoh algorithm. A general-purpose
+            alignment algorithm. As this is local alignment, any subsequence of the query and target sequence may appear
+            in the alignment.
 ```
 
 **Depends on**
