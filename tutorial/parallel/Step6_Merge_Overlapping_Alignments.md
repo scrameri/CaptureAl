@@ -11,16 +11,32 @@
 
 **Usage**
 ```
-get.consensus.from.alignment.parallel.sh -s <file> -d <directory> -m <positive integer> -b <positive numeric> -t <positive integer> -gnv
+get.consensus.from.alignment.parallel.sh -s <file> -d <directory> -m <positive integer> \
+                                         -b <positive numeric> -t <positive integer> -gnv
 ```
 
 **Arguments**
 ```
 # Required
-
+-s <sample file>
+-d <dir with alignments>
 
 
 # Optional
+
+
+-m   [0.05]         Minimum allele frequency to call a IUPAC ambiguity. Interpreted as 'minimum allele count' if >1.
+-b    [0.5]         Minimum base frequency to return a consensus instead of a gap. Interpreted as 'minimum base count' if >1.
+-g  [false]         FLAG, if turned on, then '-' characters will be ignored during consensus calculation.
+-n  [false]         FLAG, if turned on, then 'N' characters will be ignored during consensus calculation.
+-a  [false]         Prefix in consensus sequence name. If no prefix is desired, use 'FALSE' instead of an empty string.
+-z  [false]         Suffix in consensus sequence name. If no suffix is desired, use 'FALSE' instead of an empty string.
+-o  [see details]   X $(basename ${indir}).cons-${minallfreq}-${minbasefreq}'
+-v  [false]         FLAG, if turned on, the alignment consensus will be visualized as a PDF
+                    (recommended for few alignments only).
+-w     [15]          Width of output PDF file.
+-h      [7]          Height of output PDF file.
+-t      [4]          Number of parallel threads.
 
 ```
 
