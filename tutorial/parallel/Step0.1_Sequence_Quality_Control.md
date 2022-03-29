@@ -1,6 +1,6 @@
 [← Back to Tutorial Home](../)
 
-# Preprocessing STEP 1: Sequence Quality Control
+# Preprocessing Step 0.1: Sequence Quality Control
 
 ## 1) run.fastqc.sh
 
