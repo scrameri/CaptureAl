@@ -1,4 +1,4 @@
-# Handling Target Enrichment Probe Sequences
+# Handling Target Enrichment Probe Sets
 
 ## Merge physically neighboring reference sequences based on reference genome
 - [merge_refseqs.R](merge_refseqs.R)
