@@ -178,10 +178,10 @@ overlaps=$cbase.list
 align.overlapping.contigs.sh -l $overlaps -c $multifasta -m 'localpair' -t 20
 ```
 
-In cases where contigs of the same sample overlapped with a mismatch, only the base with higher frequency at that alignment site was considered. A success score of each merging procedure was computed based on the number of mismatches in overlapping contigs of the same individuals relative to the total number of bases in the alignment. The success score amounted to 1 if there were no mismatches in any individual. We discarded any merged alignment with a score smaller than 0.85 (subfamily set) or 0.9 (species set), passed to the `-s` option.
+In cases where contigs of the same sample overlapped with a mismatch, only the base with higher frequency at that alignment site was considered. A success score of each merging procedure was computed based on the number of mismatches in overlapping contigs of the same individuals relative to the total number of bases in the alignment. The success score amounted to 1 if there were no mismatches in any individual. We discarded any merged alignment with a score smaller than 0.9 (`-s` option).
 
 ```
-filter.merged.alignments.sh -d $merged -s 0.85
+filter.merged.alignments.sh -d $merged -s 0.9
 ```
 
 Unsuccessfully merged alignment sets were visually inspected to identify whether some subsets of alignments sufficiently overlapped to allow for merging. The manually selected alignments were merged again and combined with the automatically merged alignments if they showed a sufficient success score. All successfully merged alignments were then trimmed as before and used as replacements for overlapping alignments.
@@ -295,7 +295,7 @@ overlaps=$cbase.list
 align.overlapping.contigs.sh -l $overlaps -c $multifasta -m 'localpair' -t 20
 ```
 ```
-filter.merged.alignments.sh -d $merged -s 0.85
+filter.merged.alignments.sh -d $merged -s 0.95
 ```
 ```
 trim.alignment.ends.parallel.sh -s $taxa -d $merged -c 0.5 -n 0.25 -t 20 -v
