@@ -53,5 +53,5 @@ plot.fastqc.R samples.fastqc.txt fastqc_raw.pdf 18 18
 ```
 
 ## Continue
-[➜ Continue to Step 1](Step1_Read_Mapping.md)
+[➜ Continue to Read Trimming](Step0.2_Read_Trimming.md)
 
