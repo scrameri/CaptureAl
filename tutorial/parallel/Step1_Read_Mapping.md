@@ -151,13 +151,14 @@ filter.visual.coverages.sh -s <file> -t <file> -r <file> -a <numeric fraction> -
           Additional columns are ignored.
           
           
--t        Path to alignment stats. Header and tab-separation expected.
+-t        Path to coverage statistics. Header and tab-separation expected.
 
-          Sample IDs must be in the FIRST column. Alignment stats must be in the following columns as defined in
-          lines 114-122 of filter.visual.coverages.R.
+          Sample IDs must be in the FIRST column. Coverage statistics must be in the following columns as defined in
+          filter.visual.coverages.R.
           
-          Only mapping statistics of samples passed via -s will be used. A Warning or Stop is issued if there
+          Only coverage statistics of samples passed via -s will be used. A Warning or Stop is issued if there
           are mismatches.
+          
 
 -r        Path to region reference sequences. FASTA format expected. Used to correlate alignment stats with 
           reference sequence lengths and GC content.
@@ -166,7 +167,7 @@ filter.visual.coverages.sh -s <file> -t <file> -r <file> -a <numeric fraction> -
 
 
 # Optional
-          # The first two filters take *absolute* thresholds and aim to remove poorly sequenced samples or regions:
+          # The first two filters take absolute thresholds and aim to remove poorly sequenced samples or regions:
 - a       minimum fraction of regions with at least one mapped read in a sample (filters samples)
 - b       minimum fraction of samples with at least one mapped read in a region (filters target regions)
 
