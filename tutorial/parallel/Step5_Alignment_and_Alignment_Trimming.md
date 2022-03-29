@@ -55,12 +55,12 @@ align.multifastas.parallel.sh -d <directory> -m <string> -t <integer>
 **Arguments**
 ```
 # Required
--d                Path to directory with multifasta files. This directory should contain a FASTA file for each target region,
-                  each with unaligned contigs of multiple samples.
+-d                Path to directory with multifasta files. This directory should contain a FASTA file for each
+                  target region, each with unaligned contigs of multiple samples.
 
 # Optional [DEFAULT]
--m [`localpair`]  MAFFT alignment model. Choose between 'localpair', 'globalpair' or 'genafpair'. See MAFFT documentation for
-                  further details.
+-m [`localpair`]  MAFFT alignment model. Choose between 'localpair', 'globalpair' or 'genafpair'.
+                  See MAFFT documentation for further details.
 -t         [4]    Number of parallel threads.
 ```
 
