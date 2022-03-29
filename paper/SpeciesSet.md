@@ -131,7 +131,7 @@ regions=regions_kept-0.2-0-0.5-2-2-80-0.5.txt
 create.multifastas.parallel.sh -s $taxa -l $regions -d $exonerate -t 20
 ```
 
-We generated alignments in the $mafft directory using MAFFT version 7.123b, the ‘localpair’ and ‘adjustdirection’ flags, and 1000 maximum iterations:
+We generated alignments in the `$mafft` directory using MAFFT version 7.123b, the ‘localpair’ and ‘adjustdirection’ flags, and 1000 maximum iterations:
 
 ```
 align.multifastas.parallel.sh -d $multifasta -m 'localpair' -t 20
