@@ -7,32 +7,65 @@
 ![Step.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/CaptureAl_Step2.png)
 
 
-## 1) SCRIPT
+## 1) extract.readpairs.sh
 
 **Usage**
 ```
-
+extract.readpairs.sh -s <sample file> -l <locus file> -d <directory> -m <directory> -Q <integer> -t <integer>
 ```
 
 **Arguments**
 ```
 # Required
-
-
+-s sample file
+-l locus file
 
 # Optional
-
+-d absolute path to folder with quality-filtered reads
+-m absolute path to folder with mapping dirs
+-o output directory (created if inexistent)
+-Q mapping quality
+-b path to BAM file (<SAMPLE> can be part of the string and will be replaced by the actual sample using regex)
+-t number of threads used
 ```
 
 **Depends on**
 ```
-
+extract-reads-from-fastq.pl
 ```
 
 
 **Example**
 ```
+extract.readpairs.sh -s samples.txt -l loci.txt -d NovaSeq-run1_trimmed -m NovaSeq-run1_mapped -Q 10 -t 20
+```
 
+## 2) run.dipspades.sh
+
+**Usage**
+```
+run.dipspades.sh -s <sample file> -r <directory> -t <integer>
+```
+
+**Arguments**
+```
+# Required
+-s sample file (will look for extracted reads inside ${name}.targets)
+-r absolute path to extracted read pairs
+
+# Optional
+-t number of threads [DEFAULT: 15]: the parallelization is over reference sequences, not over individuals (these are assembled one after the other)
+```
+
+**Depends on**
+```
+submit-commands-var.pl
+```
+
+
+**Example**
+```
+run.dipspades.sh -s samples.txt -r NovaSeq-run1_extracted -t 20
 ```
 
 ## Continue
