@@ -1,18 +1,23 @@
-Go back to [previous step](Step0.2_Read_Trimming.md)
+[← Back to Read Trimming](Step0.2_Read_Trimming.md)
+
+
+# STEP 1
 
 ## Overview
-![Step1.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/CaptureAl_Step1.png)
+![Step.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/CaptureAl_Step1.png)
 
 
-## 1) trim.fastq.sh
+## 1) SCRIPT
 
 **Usage**
 ```
+
 ```
 
 **Arguments**
 ```
 # Required
+
 
 # Optional
 
@@ -20,13 +25,16 @@ Go back to [previous step](Step0.2_Read_Trimming.md)
 
 **Depends on**
 ```
+
 ```
 
 
 **Example**
 ```
-```
 
 samples.mapfile.txt
 
-Go to [next step](Step2_Sequence_Assembly.md)
+```
+
+## Continue
+[➜ Continue to Step 2](Step2_Sequence_Assembly.md)
