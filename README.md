@@ -19,4 +19,6 @@ Once the installation is complete, follow the [tutorial](https://github.com/scra
 ## Pipeline overview
 The pipeline is divided into **seven steps**, shown below. For each step, there is a limited number of scripts that have to be executed, and these scripts often execute other scripts located in the repository. Parts of these graph are also in the tutorial sites.
 
+\
+
 ![CaptureAl.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/CaptureAl.png)
