@@ -136,8 +136,8 @@ f.subfamily <- read.FASTA("fasta/consFabaceae_4c_1005.fasta")
 f.species <- read.FASTA("fasta/consDalbergia_4c_2396.fasta")
 
 ## Read Supplementary Tables (will attach probe sequences to these tables)
-d.subfamily <- d.subfamily.orig <- data.frame(readxl::read_excel("tables/MER-21-0599_SupplementaryTables_S6-S9.xlsx", sheet = "TableS6", skip = 3))
-d.species <- d.species.orig <- data.frame(readxl::read_excel("tables/MER-21-0599_SupplementaryTables_S6-S9.xlsx", sheet = "TableS7", skip = 3))
+d.subfamily <- d.subfamily.orig <- data.frame(readxl::read_excel("../Tables/SupplementaryTables_S6-S9.xlsx", sheet = "TableS6", skip = 3))
+d.species <- d.species.orig <- data.frame(readxl::read_excel("../Tables/SupplementaryTables_S6-S9.xlsx", sheet = "TableS7", skip = 3))
 
 ## Read genome annotation (takes time)
 # gff <- read.gff("ncbi-genomes-2019-01-28/GCF_000340665.1_C.cajan_V1.0_genomic.gff", na.strings = c(".", "?"))
