@@ -53,7 +53,7 @@ filter.visual.assemblies.sh -s  <file> -t <file> -r <file> \
            Only target regions passed via -t will be considered. A Warning or Stop is issued if there are mismatches.
 
 
-# Optional
+# Optional [DEFAULT]
            # The first two filters take absolute thresholds and aim to remove poorly assembled samples or target regions:
 -a  [0.3]  minimum fraction of regions with at least one contig in a sample (filters samples)
 -b  [0.5]  minimum median contig length relative to target length 
