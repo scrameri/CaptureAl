@@ -1,4 +1,4 @@
-# Handling Target Enrichment Probe Sets
+# Supplementary Methods
 
 ## Merge physically neighboring reference sequences based on reference genome
 - [merge_refseqs.R](merge_refseqs.R)
