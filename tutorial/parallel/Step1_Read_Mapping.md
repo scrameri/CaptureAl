@@ -134,51 +134,51 @@ filter.visual.coverages.sh -s <file> -t <file> -r <file> -a <numeric fraction> -
 **Arguments**
 ```
 # Required
--s        Path to samples file. Header and tab-separation expected.
+-s         Path to samples file. Header and tab-separation expected.
           
-          Sample IDs must be in the FIRST column. These must match (a subset of) sample names in the mapping 
-          stats passed via -t.
+           Sample IDs must be in the FIRST column. These must match (a subset of) sample names in the mapping 
+           stats passed via -t.
           
-          Group IDs can be specified in the SECOND column (if not specified, all 
-          samples are assumed to constitute one group).
+           Group IDs can be specified in the SECOND column (if not specified, all 
+           samples are assumed to constitute one group).
           
-          The group ID is used to apply region filtering criteria 4-9 within all considered groups, to determine regions
-          passing the filtering criteria in all groups.
+           The group ID is used to apply region filtering criteria 4-9 within all considered groups, to determine regions
+           passing the filtering criteria in all groups.
           
-          Samples that do not belong to any specified group (second column empty or 'NA') will be displayed in summary
-          plots but will not be considerd during region filtering. 
+           Samples that do not belong to any specified group (second column empty or 'NA') will be displayed in summary
+           plots but will not be considerd during region filtering. 
           
-          Additional columns are ignored.
+           Additional columns are ignored.
           
           
--t        Path to coverage statistics. Header and tab-separation expected.
+-t         Path to coverage statistics. Header and tab-separation expected.
 
-          Sample IDs must be in the FIRST column. Coverage statistics must be in the following columns as defined in
-          filter.visual.coverages.R.
+           Sample IDs must be in the FIRST column. Coverage statistics must be in the following columns as defined in
+           filter.visual.coverages.R.
           
-          Only coverage statistics of samples passed via -s will be used. A Warning or Stop is issued if there
-          are mismatches.
+           Only coverage statistics of samples passed via -s will be used. A Warning or Stop is issued if there
+           are mismatches.
           
 
--r        Path to region reference sequences. FASTA format expected. Used to correlate alignment stats with 
-          reference sequence lengths and GC content.
+-r         Path to region reference sequences. FASTA format expected. Used to correlate alignment stats with 
+           reference sequence lengths and GC content.
           
-          Only target regions passed via -t will be considered. A Warning or Stop is issued if there are mismatches.
+           Only target regions passed via -t will be considered. A Warning or Stop is issued if there are mismatches.
 
 
-# Optional
-          # The first two filters take absolute thresholds and aim to remove poorly sequenced samples or regions:
-- a       minimum fraction of regions with at least one mapped read in a sample (filters samples)
-- b       minimum fraction of samples with at least one mapped read in a region (filters target regions)
+# Optional [DEFAULT]
+           # The first two filters take absolute thresholds and aim to remove poorly sequenced samples or regions:
+- a  [0.3] minimum fraction of regions with at least one mapped read in a sample (filters samples)
+- b  [0.3] minimum fraction of samples with at least one mapped read in a region (filters target regions)
+ 
+           # The next four filters take thresholds...
+- c  [500] minimum BWA-MEM alignment length
+- d   [10] minimum average coverage in the aligned region
+- e [1000] maximum average coverage in the aligned region
+- f  [0.5] minimum alignment fraction (BWA-MEM alignment length divided by target region length)
 
-          # The next four filters take thresholds...
-- c       minimum BWA-MEM alignment length
-- d       minimum average coverage in the aligned region
-- e       maximum average coverage in the aligned region
-- f       minimum alignment fraction (BWA-MEM alignment length divided by target region length)
-
-          # ...that need to be met in a specified *fraction* of samples in each considered taxon group:
-- p       minimum fraction of samples in each taxon group that need to pass filters c-f in order to keep a region
+           # ...that need to be met in a specified *fraction* of samples in each considered taxon group:
+- p  [0.9]  minimum fraction of samples in each taxon group that need to pass filters c-f in order to keep a region
 
 ```
 
