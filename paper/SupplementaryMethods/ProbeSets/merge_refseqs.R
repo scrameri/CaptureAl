@@ -346,6 +346,6 @@ sum(res$df.merged$disttonext <= 2500, na.rm = T) # 100: 1791   ;  250: 1498   30
 sum(res$df.merged$disttonext <= 5000, na.rm = T) # 100: 2281   ;  250: 1988   300: 1929 500: 1682   1000: 1224  <= 5000 bp
 
 ## Write results
-save(res, file = paste0("d.probes.merged", thr, ".rda"))
+#save(res, file = paste0("fasta/d.probes.merged", thr, ".rda"))
 write.FASTA(res$refseqs.merged, file = "fasta/Cajanus_cajan_6555reg.fasta")
 write.csv2(res$df.merged, file = "fasta/Cajanus_cajan_6555reg.csv", row.names = F, quote = F)
