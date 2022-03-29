@@ -11,7 +11,8 @@
 
 **Usage**
 ```
-run.bwamem.sh -s <file> -r <file> -e <string> -d <directory> -T <positive integer> -Q <positive integer> -o <directory> -t <positive integer>
+run.bwamem.sh -s <file> -r <file> -e <string> -d <directory> -T <positive integer> -Q <positive integer> \ 
+              -o <directory> -t <positive integer>
 ```
 
 **Arguments**
@@ -27,7 +28,8 @@ run.bwamem.sh -s <file> -r <file> -e <string> -d <directory> -T <positive intege
 -T  [10]  Minimum bwa mem alignment score, passed to -T parameter of bwa mem.
 -Q  [20]  Minimum mapping quality, used to filter by the fifth field / MAPQ column in BAM files. Must be Q >= T.
 -o  [pwd] Path to output directory. A folder will be created if it does not exist.
--t  [3]   Number of samples processed in parallel. Can be between 1 (uses ${cpu} CPU cores in total) and 6 (uses 6*${cpu} CPU cores in total, cpu=4).
+-t  [3]   Number of samples processed in parallel.
+          Can be between 1 (uses ${cpu} CPU cores in total) and 6 (uses 6*${cpu} CPU cores in total, cpu=4).
 ```
 
 **Details**
@@ -125,28 +127,75 @@ collect.coverage.stats.R samples.txt 20
 
 **Usage**
 ```
-filter.visual.coverages.sh -s <file> -t <file> -r <file> -a <numeric fraction> -b <numeric fraction> -c <positive integer> -d <positive integer> -e <positive integer> -f <numeric fraction> -p <numeric fraction>
+filter.visual.coverages.sh -s <file> -t <file> -r <file> -a <numeric fraction> -b <numeric fraction> -c <positive integer> \
+                           -d <positive integer> -e <positive integer> -f <numeric fraction> -p <numeric fraction>
 ```
 
 **Arguments**
 ```
 # Required
+-s        Path to samples file. Header and tab-separation expected.
+          
+          Sample IDs must be in the FIRST column. These must match (a subset of) sample names in the mapping 
+          stats passed via -t.
+          
+          Group IDs can be specified in the SECOND column (if not specified, all 
+          samples are assumed to constitute one group).
+          
+          The group ID is used to apply region filtering criteria 4-9 within all considered groups, to determine regions
+          passing the filtering criteria in all groups.
+          
+          Samples that do not belong to any specified group (second column empty or 'NA') will be displayed in summary
+          plots but will not be considerd during region filtering. 
+          
+          Additional columns are ignored.
+          
+          
+-t        Path to alignment stats. Header and tab-separation expected.
 
+          Sample IDs must be in the FIRST column. Alignment stats must be in the following columns as defined in
+          lines 114-122 of filter.visual.coverages.R.
+          
+          Only mapping statistics of samples passed via -s will be used. A Warning or Stop is issued if there
+          are mismatches.
+
+-r        Path to region reference sequences. FASTA format expected. Used to correlate alignment stats with 
+          reference sequence lengths and GC content.
+          
+          Only target regions passed via -t will be considered. A Warning or Stop is issued if there are mismatches.
 
 
 # Optional
+          # The first two filters take *absolute* thresholds and aim to remove poorly sequenced samples or regions:
+- a       minimum fraction of regions with at least one mapped read in a sample (filters samples)
+- b       minimum fraction of samples with at least one mapped read in a region (filters target regions)
+
+          # The next four filters take thresholds...
+- c       minimum BWA-MEM alignment length
+- d       minimum average coverage in the aligned region
+- e       maximum average coverage in the aligned region
+- f       minimum alignment fraction (BWA-MEM alignment length divided by target region length)
+
+          # ...that need to be met in a specified *fraction* of samples in each considered taxon group:
+- p       minimum fraction of samples in each taxon group that need to pass filters c-f in order to keep a region
 
 ```
 
 **Depends on**
 ```
-
+# R packages:
+ggplot2
+ape
+grid
+VennDiagramm
+tidyr
 ```
 
 
 **Example**
 ```
-filter.visual.coverages.sh -s samples.mapfile.txt -t coverage_stats.txt -r reference.fasta -a 0.2 -b 0.4 -c 1 -d 8 -e 1000 -f 0 -p 0.4
+filter.visual.coverages.sh -s samples.mapfile.txt -t coverage_stats.txt -r reference.fasta \
+                           -a 0.2 -b 0.4 -c 1 -d 8 -e 1000 -f 0 -p 0.4
 ```
 
 ## Continue
