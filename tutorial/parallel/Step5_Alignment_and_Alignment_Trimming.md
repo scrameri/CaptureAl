@@ -94,9 +94,10 @@ trim.alignment.ends.parallel.sh -s <file> -d <directory> -c <numeric fraction> -
 **Arguments**
 ```
 # Required
--s            File with sample names in FIRST column. Header and tab-separation expected. Any additional columns are ignored.
--d            Path to directory with raw alignments. This directory should contain a FASTA file for each target region,
-              each with aligned contigs of multiple samples.
+-s            File with sample names in FIRST column. Header and tab-separation expected. Any additional columns
+              are ignored.
+-d            Path to directory with raw alignments. This directory should contain a FASTA file for each target
+              region, each with aligned contigs of multiple samples.
 
 # Optional [DEFAULT]
 -c    [0.5]   Completeness parameter. Alignments are trimmed at both ends until an alignment site has nucleotides in at least
@@ -147,9 +148,10 @@ trim.alignments.parallel.sh -s <file> -d <directory> -c <numeric fraction> -z <p
 **Arguments**
 ```
 # Required
--s            File with sample names in FIRST column. Header and tab-separation expected. Any additional columns are ignored.
--d            Path to directory with raw or end-trimmed alignments. This directory should contain a FASTA file for each
-              target region, each with aligned contigs of multiple samples.
+-s            File with sample names in FIRST column. Header and tab-separation expected. Any additional columns
+              are ignored.
+-d            Path to directory with raw or end-trimmed alignments. This directory should contain a FASTA file
+              for each target region, each with aligned contigs of multiple samples.
 
 # Optional [DEFAULT]
 -c    [0.3]   Completeness parameter. Any alignment site with nucleotides in less than this specified fraction of aligned
@@ -176,8 +178,8 @@ trim.alignments.parallel.sh -s <file> -d <directory> -c <numeric fraction> -z <p
 
 **Details**
 ```
-This script creates an output directory of the form `<inputdirectory>.c${c}.n{$n}`, where ${c} is the completeness parameter
-and ${n} is the conservation parameter.
+This script creates an output directory of the form `<inputdirectory>.c${c}.n{$n}`, where ${c} is the completeness 
+parameter and ${n} is the conservation parameter.
 ```
 
 **Depends on**
