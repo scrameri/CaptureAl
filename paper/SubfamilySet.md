@@ -178,7 +178,7 @@ overlaps=$cbase.list
 align.overlapping.contigs.sh -l $overlaps -c $multifasta -m 'localpair' -t 20
 ```
 
-In cases where contigs of the same sample overlapped with a mismatch, only the base with higher frequency at that alignment site was considered. A success score of each merging procedure was computed based on the number of mismatches in overlapping contigs of the same individuals relative to the total number of bases in the alignment. The success score amounted to 1 if there were no mismatches in any individual. We discarded any merged alignment with a score smaller than 0.85 (subfamily set) or 0.9 (species set), passed to the `-s` option.
+In cases where contigs of the same sample overlapped with a mismatch, only the base with higher frequency at that alignment site was considered. A success score of each merging procedure was computed based on the number of mismatches in overlapping contigs of the same individuals relative to the total number of bases in the alignment. The success score amounted to 1 if there were no mismatches in any individual. We discarded any merged alignment with a score smaller than 0.85 (`-s` option).
 
 ```
 filter.merged.alignments.sh -d $merged -s 0.85
