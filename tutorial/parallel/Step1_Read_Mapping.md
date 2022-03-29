@@ -91,7 +91,7 @@ bedtools
 get.coverage.stats.sh -s samples.txt -Q 20 -t 20
 ```
 
-## 3) collect.coverage.stats.R $s $Q
+## 3) collect.coverage.stats.R
 
 **Usage**
 ```
