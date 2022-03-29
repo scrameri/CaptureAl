@@ -312,3 +312,4 @@ get.group.consensus.sh -s mapfile.fabaceae.txt -d $trimmed -m 1 -b 0.01 -z ".all
 rename.fasta.headers.R $newref ".cons.aln" FALSE FALSE
 mv $newref consFabaceae_4c_1005.fasta 
 ```
+The sequence names in `consFabaceae_4c_1005.fasta` were used to extract 3273 corresponding probe sequences (`Fabaceae1005_3273probes_1005reg.fasta`, see [script](https://github.com/scrameri/CaptureAl/blob/master/ProbeSets/extract_probes.R)).
