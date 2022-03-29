@@ -45,7 +45,7 @@ The next four filters take thresholds...
 filter.visual.coverages.sh -s mapfile.fabaceae.12.txt -t coverage_stats.txt -r Cajanus_cajan_6555reg.fasta -a 0.2 -b 0.3 -c 1 -d 6 -e 1000 -f 0 -p 0.3
 ```
 
-This script visualized the coverage statistics as violin plots and heatmaps (see Figures S5 and S6 for results of the second iteration), and saved a list of kept samples (`coverage_stats-taxa-*.txt`) as well as a list of kept target regions (`coverage_stats-regions-*.txt`) for sequence assembly.
+This script visualized the coverage statistics as violin plots and heatmaps (see Figure S5 for results of the second iteration), and saved a list of kept samples (`coverage_stats-taxa-*.txt`) as well as a list of kept target regions (`coverage_stats-regions-*.txt`) for sequence assembly.
 
 
 ### Step 2: Sequence assembly
@@ -92,7 +92,7 @@ This produced the file `loci_contignumbers.txt`, which was visualized using the 
 plot.contig.numbers.R loci_contignumbers.txt mapfile.fabaceae.12.txt
 ```
 
-This produced Figures S7c and S8c.
+This produced Figure S7c.
 
 
 ### Step 4: sample and region filtering
