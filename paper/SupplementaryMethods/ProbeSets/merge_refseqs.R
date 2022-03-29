@@ -12,8 +12,8 @@ genomefile <- "ncbi-genomes-2019-01-28/GCF_000340665.1_C.cajan_V1.0_genomic.fna"
 gfffile <- "ncbi-genomes-2019-01-28/GCF_000340665.1_C.cajan_V1.0_genomic.gff"
 
 # original 7201 reference sequences and position stats (provided by S. Zoller)
-reffile <- "orig.fragments.of.all.probes.dalb.pset.two.sp.v1.fasta"
-stats <- "orig.fragments.of.all.probes.dalb.pset.two.sp.v1.csv" # this was produced based on the files above, in lines 162-290 (takes long!)
+reffile <- "fasta/orig.fragments.of.all.probes.dalb.pset.two.sp.v1.fasta"
+stats <- "fasta/orig.fragments.of.all.probes.dalb.pset.two.sp.v1.csv" # this was produced based on the files above, in lines 162-290 (takes long!)
 
 
 ## Define helperfunctions
@@ -347,5 +347,5 @@ sum(res$df.merged$disttonext <= 5000, na.rm = T) # 100: 2281   ;  250: 1988   30
 
 ## Write results
 save(res, file = paste0("d.probes.merged", thr, ".rda"))
-write.FASTA(res$refseqs.merged, file = "Cajanus_cajan_6555reg.fasta")
-write.csv2(res$df.merged, file = "Cajanus_cajan_6555reg.csv", row.names = F, quote = F)
+write.FASTA(res$refseqs.merged, file = "fasta/Cajanus_cajan_6555reg.fasta")
+write.csv2(res$df.merged, file = "fasta/Cajanus_cajan_6555reg.csv", row.names = F, quote = F)
