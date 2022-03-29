@@ -88,7 +88,8 @@ align.multifastas.parallel.sh -d multifasta.63.2396 -m 'localpair' -t 20
 
 **Usage**
 ```
-trim.alignment.ends.parallel.sh -s <file> -d <directory> -c <numeric fraction> -n <numeric fraction> -t <positive integer> -v
+trim.alignment.ends.parallel.sh -s <file> -d <directory> -c <numeric fraction> -n <numeric fraction> \
+                                -t <positive integer> -v
 ```
 
 **Arguments**
@@ -118,8 +119,8 @@ trim.alignment.ends.parallel.sh -s <file> -d <directory> -c <numeric fraction> -
 
 **Details**
 ```
-This script creates an output directory of the form `<inputdirectory>.c${c}.d{$n}`, where ${c} is the completeness parameter
-and ${n} is the nucleotide diversity parameter.
+This script creates an output directory of the form `<inputdirectory>.c${c}.d{$n}`,
+where ${c} is the completeness parameter and ${n} is the nucleotide diversity parameter.
 ```
 
 **Depends on**
@@ -183,8 +184,8 @@ trim.alignments.parallel.sh -s <file> -d <directory> -c <numeric fraction> -z <p
 
 **Details**
 ```
-This script creates an output directory of the form `<inputdirectory>.c${c}.n{$n}`, where ${c} is the completeness 
-parameter and ${n} is the conservation parameter.
+This script creates an output directory of the form `<inputdirectory>.c${c}.n{$n}`,
+where ${c} is the completeness parameter and ${n} is the conservation parameter.
 ```
 
 **Depends on**
