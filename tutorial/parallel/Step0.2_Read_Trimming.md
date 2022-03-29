@@ -1,4 +1,4 @@
-Go back to [previous step](Step0.1_Read_Trimming.md)
+Go back to [previous step](Step0.1_Sequence_Quality_Control.md)
 
 ## 1) SCRIPT
 
