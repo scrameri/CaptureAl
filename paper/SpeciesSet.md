@@ -199,7 +199,7 @@ Sets of reference consensus sequences for different taxon groups were generated,
 get.group.consensus.sh -s mapfile.dalbergia.12.txt -d $trimmed -m 1 -b 0.01 -z ".all.aln.etr.itr.cons" -t 20 -gnv
 ```
 
-The resulting FASTA file $newref was renamed according to the taxon set and number of remaining target regions:
+The resulting FASTA file `$newref` was renamed according to the taxon set and number of remaining target regions:
 
 ```
 rename.fasta.headers.R $newref ".cons.aln" FALSE FALSE
