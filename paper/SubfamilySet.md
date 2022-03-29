@@ -1,3 +1,5 @@
+# CaptureAl analysis of the Subfamliy set (n = 110)
+
 ## Read quality-trimming and quality-filtering
 Raw paired-end reads with the indicated file extensions (`-x` option) located in the `$raw` directory (`-r` option) were quality-trimmed and quality-filtered using trimmomatic version 0.32 (Bolger et al., 2014). Specifically, we used `ILLUMINACLIP` with an adapter sequence file containing NEBNext, TRUSEQ and Illumina adaptor sequences (`-a` option), a seed mismatch of 2, a palindrome clip threshold of 20, a simple clip threshold of 10, a minimum adapter length of 10, while keeping both reads. Leading and trailing bases of each read were removed if the quality was below 5. Sliding window trimming was performed using a window size of 4 and a required average quality of 15. Quality-trimmed reads shorter than 50 bases were removed. The following script executed trimmomatic as specified above, for 20 samples in parallel: 
 
