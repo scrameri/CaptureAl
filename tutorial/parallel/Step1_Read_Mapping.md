@@ -55,7 +55,7 @@ r
 
 **Example**
 ```
-run.bwamem.sh -s samles.txt -r reference.fasta -e '.trim1.fastq.gz,.trim2.fastq.gz' -T 10 -Q 20 -d NovaSeq-run1_trimmed -t 4
+run.bwamem.sh -s samles.txt -r ref.fasta -e '.trim1.fastq.gz,.trim2.fastq.gz' -T 10 -Q 20 -d NS-run1_trimmed -t 4
 ```
 
 ## 2) get.coverage.stats.sh
