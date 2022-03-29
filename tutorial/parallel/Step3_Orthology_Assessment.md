@@ -36,4 +36,4 @@
 ```
 
 ## Continue
-[➜ Continue to Step 4](Step4_Sample_and_Region_Filtering.md)
+[➜ Continue to Step 4](Step4_Sample_and_Locus_Filtering.md)
