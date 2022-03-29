@@ -1,5 +1,5 @@
 ### Parallel Computing
-Depending on your computing environment, there is the **GNU parallel** solution and the **BSUB solution** to run the analysis steps for many samples or loci in parallel. The first uses the GNU command `parallel` and is suitable for execution on clusters or personal computers, and the second uses the `bsub` command and is suitable for execution on large high-performance clusters. In each case, multiple so-called jobs are distributed and executed on different computing nodes.
+Depending on your computing environment, scripts can be executed using **GNU parallel** (on personal computers or computing servers) or using **BSUB** (on modern large computing clusters) to run the analysis steps for many samples or loci in parallel. The first uses the GNU command `parallel` to process multiple samples/loci in parallel, and the second uses the `bsub` command to submit multiple jobs at once on large high-performance clusters.
 
 The GNU parallel scripts take arguments via the available options, which are explained in the first section of each script (e.g. execute `somescript.sh -s samples.txt -t 5` to apply an analysis step to all samples specified in `samples.txt` using 5 threads). For **reproducibility**, automatically created log files will document which arguments were passed to each script.
 
