@@ -1,5 +1,5 @@
 ## CaptureAl tutorial
-This is the tutorial implementing the **bsub** version. Click [here](https://github.com/scrameri/CaptureAl/blob/master/tutorial/parallel) the **parallel** version.
+This is the tutorial (in prep.) implementing the **bsub** version. Click [here](https://github.com/scrameri/CaptureAl/blob/master/tutorial/parallel) the **parallel** version.
 
 ### Pre-processing reads
 1) [Step 0.1: Sequence Quality Control](Step0.1_Sequence_Quality_Control.md)
@@ -15,6 +15,5 @@ This is the tutorial implementing the **bsub** version. Click [here](https://git
 7) [Step 7: Create Representative Reference Sequences](Step7_Create_Representative_Reference_Sequences.md)
 
 ### Post-processing alignments and mapped reads
-in prep.
-1) Phylogenetics
-2) Population Genetics
+1) [Phylogenetics](https://github.com/scrameri/CaptureAl/tree/master/Phylogenetics)
+2) [Population Genetics](https://github.com/scrameri/CaptureAl/tree/master/PopulationGenetics)
