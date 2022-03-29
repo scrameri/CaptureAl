@@ -11,7 +11,7 @@
 
 **Usage**
 ```
-
+get.group.consensus.sh -s mapfile.dalbergia.txt -d mafft.63.2396.c0.5.d0.25.c0.4.n0.5 -m 1 -b 0.01 -z '.all.aln.etr.itr.cons' -t 20 -gnv
 ```
 
 **Arguments**
