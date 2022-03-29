@@ -53,7 +53,7 @@ We extracted read pairs from quality-filtered and quality-trimmed reads located 
 
 ```
 s=coverage_stats-taxa-0.2.txt
-l=coverage_stats-regions-0.2-0.3-1-6-1000-0-0.3.txt
+l=coverage_stats-regions-0.2-0.4-1-8-1000-0-0.4.txt
 
 cd $scratch
 
@@ -118,7 +118,7 @@ The next six filters set the thresholds...
 filter.visual.assemblies.sh -s mapfile.dalbergia.12.txt -t loci_stats.txt -r Cajanus_cajan_6555reg.fasta -a 0.2 -b 0 -c 0.5 -d 2 -e 2 -f 80 -g 0 -h 1 -i 1 -p 0.5
 ```
 
-This script visualized the assembly statistics as violin plots and heatmaps (see panels a, b and d of Figures S7 and S8 for results of the second iteration), and saved a list of kept samples (`taxa=taxa_kept-*.txt`) as well as a list of kept target regions (`regions_kept-*.txt`) for sequence alignment.
+This script visualized the assembly statistics as violin plots and heatmaps (see panels a, b and d of Figure S8 for results of the second iteration), and saved a list of kept samples (`taxa=taxa_kept-*.txt`) as well as a list of kept target regions (`regions_kept-*.txt`) for sequence alignment.
 
 
 ### Step 5: Target region alignment and alignment trimming
@@ -243,7 +243,7 @@ run.dipspades.sh -s $s -r $extractedreads -t 20
 select.best.contigs.per.locus.sh -s $s -l $l -r Dalbergia_iter1_3736reg.fasta -d $assemblies -t 20
 ```
 ```
-combine.contigs.parallel.sh -s $s -d $exonerate -a 1 -c 1 -t 20
+combine.contigs.parallel.sh -s $s -d $exonerate -a 1 -c 2 -t 20
 ```
 ```
 collect.exonerate.stats.R $s $exonerate
