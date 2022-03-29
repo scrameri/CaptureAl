@@ -1,6 +1,6 @@
 [← Back to Sequence Quality Control](Step0.1_Sequence_Quality_Control.md)
 
-# Preprocessing Step 2: Read Trimming
+# Preprocessing Step 0.2: Read Trimming
 
 ## 1) trim.fastq.sh
 
