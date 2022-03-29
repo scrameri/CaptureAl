@@ -103,7 +103,7 @@ collect.coverage.stats.R <file> <positive integer>
 # Required
 1) <sfile|CHR>:  path to sample file containing paths to sample directories with mapping results. No header expected. ;
 
-# Optional
+# Optional [DEFAULT] (if one or more arguments are passed, they must be passed in this order)
 2) <Q|NUM>:      mapping quality threshold. Will look for SAMPLE.Q${Q}.coverage.txt [DEFAULT: 10]
 3) <maxcov|NUM>: maximum coverage threshold. Will look for SAMPLE.Q${Q}.nodup.cov${maxcov}.coverage.txt [DEFAULT: 500]
 4) <dir|CHR>:    folder with subdirectories for each sample [DEFAULT: current directory ]
