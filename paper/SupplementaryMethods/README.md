@@ -4,6 +4,10 @@
 - [merge_refseqs.R](ProbeSets/merge_refseqs.R)
   - Combine two phylocally close sequences into a single contiguous sequence using a reference genome to fill the gap.
 
+## Executed CaptureAl pipeline steps
+- [Subfamily set]()
+- [Species set]()
+
 ## Create new probe sets
 - [extract_probes.R](ProbeSets/extract_probes.R)
   - Extract tiled target enrichment probes from a list of target regions
