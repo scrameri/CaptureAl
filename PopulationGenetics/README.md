@@ -13,6 +13,9 @@
   - Randomly select a number of SNPs from a `*.vcf` file of filtered SNPs, with low missingness per genomic region
   - Create a corresponding input file for [STRUCTURE](https://web.stanford.edu/group/pritchardlab/structure.html) (Pritchard et al., 2000)
 
+## Further Reading
+- https://grunwaldlab.github.io/Population_Genetics_in_R/Introduction.html
+
 ## References
 - Jombart, T. (2008). adegenet: a R package for the multivariate analysis of genetic markers. *Bioinformatics*, 24(11), 1403–1405. [DOI](https://doi.org/10.1093/bioinformatics/btn129).
 - Jombart, T., & Ahmed, I. (2011). adegenet 1.3-1: new tools for the analysis of genome-wide SNP data. *Bioinformatics*, 27(21), 3070–3071. [DOI](https://doi.org/10.1093/bioinformatics/btr521).
