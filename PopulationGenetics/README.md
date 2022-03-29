@@ -11,7 +11,7 @@
 - [vcf_STRUCTURE.R](vcf_STRUCTURE.R)
 
   - Randomly select a number of SNPs from a `*.vcf` file of filtered SNPs, with low missingness per genomic region
-  - Create an input file for [STRUCTURE](https://web.stanford.edu/group/pritchardlab/structure.html) (Pritchard et al., 2000)
+  - Create a corresponding input file for [STRUCTURE](https://web.stanford.edu/group/pritchardlab/structure.html) (Pritchard et al., 2000)
 
 ## References
 - Jombart, T. (2008). adegenet: a R package for the multivariate analysis of genetic markers. *Bioinformatics*, 24(11), 1403–1405. [DOI](https://doi.org/10.1093/bioinformatics/btn129).
@@ -21,4 +21,3 @@
 - Paradis, E., & Schliep, K. (2018). ape 5.0: an environment for modern phylogenetics and evolutionary analyses in R. *Bioinformatics*, 35(3), 526–528. [DOI](https://doi.org/10.1093/bioinformatics/bty633).
 - Pritchard, J. K., Stephens, M., & Donnelly, P. (2000). Inference of population structure using multilocus genotype data. *Genetics*, 155(2), 945–959.
 - Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L., François, R., Grolemund, G., Hayes, A., Henry, L., Hester, J., Kuhn, M., Pedersen, T., Miller, E., Bache, S., Müller, K., Ooms, J., Robinson, D., Seidel, D., Spinu, V., Takahashi, K., Vaughan, D., Wilke, C., Woo, K., & Yutani, H. (2019). Welcome to the Tidyverse. *The Journal of Open Source Software*, 4(43), 1686. [DOI](https://doi.org/10.21105/joss.01686).
-
