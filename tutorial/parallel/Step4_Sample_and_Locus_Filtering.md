@@ -12,10 +12,10 @@
 **Usage**
 ```
 filter.visual.assemblies.sh -s  <file> -t <file> -r <file> \
-				    -a <numeric fraction> -b <numeric fraction> -c <numeric fraction> \
-            -d <positive integer> -e <positive numeric> -f <positive integer> \
-            -g <numeric fraction> -h <positive numeric> -i <positive integer> \
-            -p  <numeric fraction>
+			    -a <numeric fraction> -b <numeric fraction> -c <numeric fraction> \
+             		    -d <positive integer> -e <positive numeric> -f <positive integer> \
+        		    -g <numeric fraction> -h <positive numeric> -i <positive integer> \
+       			    -p <numeric fraction>
 ```
 
 **Arguments**
