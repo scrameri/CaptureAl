@@ -7,11 +7,12 @@ trim.fastq.sh -s samples.fabaceae.12.txt -a illumina.truseq.indexing.adaptors -r
 
 The quality of raw and trimmed reads was assessed with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc) version 0.11.5.
 
-## Executed command-line scripts and parameter choices for steps 1–7 and iterations 1–2
+
+## Iteration 1 of executed command-line scripts and parameter choices for steps 1–7
 The following sections track the executed pipeline scripts and chosen parameters at each analysis step. 
 
 ### Step 1: Read mapping
-We ran BWA version 0.7.12-r1039 (Li & Durbin, 2009) and BWA-MEM in the `mapped` directory, using the quality-trimmed and quality-filtered reads with the indicated file extensions (`-e` option, comma-separated string denoting file extensions of forward and reverse reads, respectively) located in the `$trimmed` directory (`-d` option), and the respective reference sequences for each taxon set and iteration (`-r` option). The script outputs reads with a minimum alignment score of `10` (`-T` option), marks secondary hits, and only retains reads with a minimum mapping quality of `10` (`-Q` option) in the final SAM files before compressing them to BAM format. An early filtering of target regions with inadequate coverage across samples prevents time-consuming sequence assembly of target regions that would likely be filtered out in step 4. Computations were performed for all samples specified in `samples.fabaceae.12.txt` (`-s` option) using 4 times 5 threads in parallel (`-t` option) as follows:
+We ran BWA version 0.7.12-r1039 (Li & Durbin, 2009) and BWA-MEM in the `$mapped` directory, using the quality-trimmed and quality-filtered reads with the indicated file extensions (`-e` option, comma-separated string denoting file extensions of forward and reverse reads, respectively) located in the `$trimmed` directory (`-d` option), and the respective reference sequences for each taxon set and iteration (`-r` option). The script outputs reads with a minimum alignment score of `10` (`-T` option), marks secondary hits, and only retains reads with a minimum mapping quality of `10` (`-Q` option) in the final SAM files before compressing them to BAM format. An early filtering of target regions with inadequate coverage across samples prevents time-consuming sequence assembly of target regions that would likely be filtered out in step 4. Computations were performed for all samples specified in `samples.fabaceae.12.txt` (`-s` option) using 4 times 5 threads in parallel (`-t` option) as follows:
 
 ```
 run.bwamem.sh -s samples.fabaceae.12.txt -r Cajanus_cajan_6555reg.fasta -e .trim1.fastq.gz,.trim2.fastq.gz -T 10 -Q 10 -d $trimmed -t 4
@@ -48,18 +49,18 @@ This script visualized the coverage statistics as violin plots and heatmaps (see
 
 
 ### Step 2: Sequence assembly
-We extracted read pairs from quality-filtered and quality-trimmed reads located in the `$trimmed` directory (`-d` option). The `-s` and `-l` parameters are used to pass the list of samples and loci (target regions) to be processed in parallel, respectively. This step was carried out on a local scratch (`$extractedreads` directory) using 20 parallel threads (`-t` option). At least one of the two reads per extracted read pair mapped to a retained target region with a minimum mapping quality of 10 (`-Q` option):  
+We extracted read pairs from quality-filtered and quality-trimmed reads located in the `$trimmed` directory (`-d` option). The `-s` and `-l` parameters are used to pass the list of samples and loci (target regions) to be processed in parallel, respectively. This step was carried out on a local scratch (`$scratch` directory) using 20 parallel threads (`-t` option) and produced the `$extractedreads` directory. At least one of the two reads per extracted read pair mapped to a retained target region with a minimum mapping quality of 10 (`-Q` option):  
 
 ```
 s=coverage_stats-taxa-0.2.txt
 l=coverage_stats-regions-0.2-0.3-1-6-1000-0-0.3.txt
 
-cd $extractedreads
+cd $scratch
 
-extract.readpairs.sh -s $s -l $l -d trimmed -m mapped -Q 10 -t 20
+extract.readpairs.sh -s $s -l $l -d $trimmed -m $mapped -Q 10 -t 20
 ```
 
-We assembled the extracted reads located in the `extractedreads` directory (`-r` option) into consensus contigs (contigs hereafter) separately for each sample and retained region using DIPSPADES (SPADES version 3.6.0) in `assembly-only` and `careful` mode, with an automatic coverage cutoff. This step was carried out on a local scratch (`$assemblies` directory) using 20 parallel threads (`-t` option):
+We assembled the extracted reads located in the `$extractedreads` directory (`-r` option) into consensus contigs (contigs hereafter) separately for each sample and retained region using DIPSPADES (SPADES version 3.6.0) in `assembly-only` and `careful` mode, with an automatic coverage cutoff. This step was carried out on a local scratch (`$assemblies` directory) using 20 parallel threads (`-t` option):
 
 ```
 run.dipspades.sh -s $s -r $extractedreads -t 20
@@ -124,8 +125,8 @@ This script visualized the assembly statistics as violin plots and heatmaps (see
 We generated multifasta files in the `$multifasta directory for all retained target regions, containing all retained contigs and samples as follows:
 
 ```
-taxa=taxa_kept-$11.txt
-regions=regions_kept-$11-$12-$13-$14-$15-$19.txt
+taxa=taxa_kept-0.2.txt
+regions=regions_kept-0.2-0-0.5-2-2-80-0.5.txt
 
 create.multifastas.parallel.sh -s $taxa -l $regions -d $exonerate -t 20
 ```
@@ -195,12 +196,119 @@ replace.overlapping.alignments.R $trimmed $merged $overlaps
 Sets of reference consensus sequences for different taxon groups were generated, combined, aligned, and a group consensus was derived as follows:
 
 ```
-get.group.consensus.sh -s $taxa -d $trimmed -m 1 -b 0.01 -z ".all.aln.etr.itr.cons" -t 20 -gnv
+get.group.consensus.sh -s mapfile.fabaceae.12.txt -d $trimmed -m 1 -b 0.01 -z ".all.aln.etr.itr.cons" -t 20 -gnv
 ```
 
 The resulting FASTA file $newref was renamed according to the taxon set and number of remaining target regions:
 
 ```
 rename.fasta.headers.R $newref ".cons.aln" FALSE FALSE
-mv $newref <SET NAME>_iter<# ITERATION>_<# REGIONS>reg.fasta 
+mv $newref Fabaceae_iter1_2468reg.fasta
+```
+
+
+## Iteration 2 of executed command-line scripts and parameter choices for steps 1–7
+Iteration 1 was applied to a subset of 12 samples, which were representative of all defined taxon groups. We applied a second iteration of read mapping, assembly, and alignment to all 110 samples of the subfamily set, using more stringent filtering parameters as follows (see Iteration 1 for explanations):
+
+
+### Step 1: Read mapping
+```
+run.bwamem.sh -s samples.fabaceae.txt -r Fabaceae_iter1_2468reg.fasta -e .trim1.fastq.gz,.trim2.fastq.gz -T 10 -Q 10 -d $trimmed -t 4
+```
+```
+get.coverage.stats.sh -s samples.fabaceae.txt -Q 10 -t 20
+
+collect.coverage.stats.R samples.fabaceae.txt 10
+```
+```
+filter.visual.coverages.sh -s mapfile.fabaceae.txt -t coverage_stats.txt -r Fabaceae_iter1_2468reg.fasta -a 0.2 -b 0.7 -c 1 -d 8 -e 1000 -f 0 -p 0.7
+```
+
+### Step 2: Sequence assembly
+```
+s=coverage_stats-taxa-0.2.txt
+l=coverage_stats-regions-0.2-0.7-1-8-1000-0-0.7.txt
+
+cd $scratch
+
+extract.readpairs.sh -s $s -l $l -d $trimmed -m $mapped -Q 10 -t 20
+```
+```
+run.dipspades.sh -s $s -r $extractedreads -t 20
+```
+
+
+### Step 3: Orthology assessment
+```
+select.best.contigs.per.locus.sh -s $s -l $l -r Fabaceae_iter1_2468reg.fasta -d $assemblies -t 20
+```
+```
+combine.contigs.parallel.sh -s $s -d $exonerate -a 1 -c 1 -t 20
+```
+```
+collect.exonerate.stats.R $s $exonerate
+```
+```
+plot.contig.numbers.R loci_contignumbers.txt mapfile.fabaceae.txt
+```
+
+
+### Step 4: sample and region filtering
+```
+filter.visual.assemblies.sh -s mapfile.fabaceae.txt -t loci_stats.txt -r Fabaceae_iter1_2468reg.fasta -a 0.2 -b 0 -c 0.75 -d 2 -e 2 -f 80 -g 0 -h 1 -i 1 -p 0.5
+```
+
+
+### Step 5: Target region alignment and alignment trimming
+```
+taxa=taxa_kept-0.2.txt
+regions=regions_kept-0.2-0-0.75-2-2-80-0.5.txt
+
+create.multifastas.parallel.sh -s $taxa -l $regions -d $exonerate -t 20
+```
+```
+align.multifastas.parallel.sh -d $multifasta -m 'localpair' -t 20
+```
+```
+trim.alignment.ends.parallel.sh -s $taxa -d $mafft -c 0.5 -n 0.25 -t 20 -v
+```
+```
+trim.alignments.parallel.sh -s $taxa -d $endtrimmed -c 0.4 -z 20 -S 1 -n 0.5 -t 20 -v
+```
+
+
+### Step 6: Merge overlapping alignments
+```
+get.consensus.from.alignment.parallel.sh -s $taxa -d $trimmed -m 1 -b 0.01 -t 20 -gnv
+```
+```
+cons=${trimmed}-cons.fasta
+rename.fasta.headers.R $cons ".all.aln.etr.itr" FALSE FALSE
+blast.vs.self.sh $cons
+```
+```
+cbase=$(basename $cons .fasta)
+find.overlapping.alignments.R $cbase.vs.self.blast.filtered TRUE 'LG_' '_'
+```
+```
+overlaps=$cbase.list
+align.overlapping.contigs.sh -l $overlaps -c $multifasta -m 'localpair' -t 20
+```
+```
+filter.merged.alignments.sh -d $merged -s 0.85
+```
+```
+trim.alignment.ends.parallel.sh -s $taxa -d $merged -c 0.5 -n 0.25 -t 20 -v
+trim.alignments.parallel.sh -s $taxa -d $merged -c 0.4 -z 20 -n 0.5 -S 1 -t 20 -v
+replace.overlapping.alignments.R $trimmed $merged $overlaps
+```
+
+
+### Step 7: Create representative reference sequences
+```
+get.group.consensus.sh -s mapfile.fabaceae.txt -d $trimmed -m 1 -b 0.01 -z ".all.aln.etr.itr.cons" -t 20 -gnv
+```
+```
+rename.fasta.headers.R $newref ".cons.aln" FALSE FALSE
+mv $newref consFabaceae_4c_1005.fasta 
 ```
