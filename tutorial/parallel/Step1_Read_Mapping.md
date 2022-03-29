@@ -1,7 +1,7 @@
-Go back to [previous step]()
+Go back to [previous step](Step0.2_Read_Trimming.md)
 
 ## Overview
-![Step1.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/Step1.png)
+![Step1.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/CaptureAl_Step1.png)
 
 
 ## 1) trim.fastq.sh
@@ -36,4 +36,4 @@ trimmomatic
 trim.fastq.sh -s samples.fabaceae.12.txt -a illumina.truseq.indexing.adaptors -r NovaSeq-run1_raw -x '_R1.fastq.gz,_R2.fastq.gz' -t 20
 ```
 
-Go to [next step]()
+Go to [next step](Step2_Sequence_Assembly.md)
