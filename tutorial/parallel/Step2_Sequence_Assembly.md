@@ -17,10 +17,10 @@ extract.readpairs.sh -s <sample file> -l <locus file> -d <directory> -m <directo
 **Arguments**
 ```
 # Required
--s sample file
--l locus file
--d  []  absolute path to folder with quality-filtered reads
--m  []  absolute path to folder with mapping dirs
+-s                  sample file
+-l                  locus file
+-d                  absolute path to folder with quality-filtered reads
+-m                  absolute path to folder with mapping dirs
 
 # Optional [DEFAULT]
 -o  [seq-extracted] output directory (created if inexistent)
