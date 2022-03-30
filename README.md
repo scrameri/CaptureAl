@@ -22,3 +22,6 @@ The pipeline is divided into **seven steps**, shown below. For each step, there 
 <br />
 
 ![CaptureAl.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/CaptureAl.png)
+
+## Pipeline authors
+Simon Crameri & Stefan Zoller
