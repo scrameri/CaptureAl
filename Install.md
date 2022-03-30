@@ -1,4 +1,6 @@
-### Check Installation
+# Dependencies
+
+## Software
 This repository provides scripts (see [src](https://github.com/scrameri/CaptureAl/tree/master/src) directory) that use third-party software. These sofware tools must be executable from your computing environment:
 - R and corresponding Rscript (tested on version 3.1.2, 3.6 and 4.0)
 - python (tested on version 2.7.11)
