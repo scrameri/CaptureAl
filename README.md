@@ -10,7 +10,7 @@ This repository accompanies a manuscript in review (Crameri et al. submitted), a
 3) Determine how to implement [parallel computing](https://github.com/scrameri/CaptureAl/blob/master/Parallelize.md) in your computing environment (*GNU parallel* or *bsub*)
 
 ## Get started
-Once the installation is complete, follow the [tutorial](https://github.com/scrameri/CaptureAl/blob/master/tutorial/) step by step. You can also jump-start to **STEP 1** ([parallel](https://github.com/scrameri/CaptureAl/blob/master/tutorial/parallel/Step1_Read_Mapping.md) or [bsub](https://github.com/scrameri/CaptureAl/blob/master/tutorial/bsub/Step1_Read_Mapping.md)) if your reads are already quality-trimmed.
+Once the installation is complete, follow the [tutorial](https://github.com/scrameri/CaptureAl/blob/master/tutorial/) step by step. You can also skip preprocessing of reads and jump-start to CaptureAl **STEP 1** ([parallel](https://github.com/scrameri/CaptureAl/blob/master/tutorial/parallel/Step1_Read_Mapping.md) or [bsub](https://github.com/scrameri/CaptureAl/blob/master/tutorial/bsub/Step1_Read_Mapping.md)) if your reads are already quality-trimmed.
 
 ## Post-process Workflows for
 - [Phylogenetics](Phylogenetics)
