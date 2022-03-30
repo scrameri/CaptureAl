@@ -75,7 +75,7 @@ write.table(d.stru, file = "data/Monticola.51.7156.Dalbergia_CH1.3_51_116500.str
 # use the .str file to run STRUCTURE analyses
 
 
-## Plot STRUCTURE results
+## Generate sorted input for CLUMPAK
 # get data
 input <- "Chapter1.3_mapsnp-2396_51/results"
 # load("data/d.uce_v1.rda") # hidden
