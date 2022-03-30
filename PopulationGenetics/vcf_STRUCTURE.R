@@ -22,7 +22,7 @@ na.int <- -9            # value used to code missing genotypes in STRUCTURE inpu
 
 ## Create genind object from VCF file of filtered SNPs
 # read vcf
-input <- "Dalbergia_51_2396_116500.filtered.vcf" # 116,500 variants after variant filtering
+input <- "data/Dalbergia_51_2396_116500.filtered.vcf" # 116,500 variants after variant filtering
 dd <- read.vcfR(file = input)
 
 # heterozygosity
@@ -67,7 +67,7 @@ d.stru <- apply(dfnum, 2, function(x) {x[is.na(x)] <- na.int ; return(x)})
 
 ncol(d.stru)/2 # 7156 SNPs
 
-write.table(d.stru, file = "Monticola.51.7156.Dalbergia_CH1.3_51_116500.str",
+write.table(d.stru, file = "data/Monticola.51.7156.Dalbergia_CH1.3_51_116500.str",
             row.names = TRUE, sep = " ", col.names = F, quote = F)
 
 
@@ -78,8 +78,8 @@ write.table(d.stru, file = "Monticola.51.7156.Dalbergia_CH1.3_51_116500.str",
 ## Plot STRUCTURE results
 # get data
 input <- "Chapter1.3_mapsnp-2396_51/results"
-# load("~/Dropbox/_ETH_Arbeit/Dalbergia/UCE/d.uce_v1.rda") # hidden
-# load("~/Dropbox/_ETH_Arbeit/Dalbergia/Sampling/data.rda") # hidden coordinates
+# load("data/d.uce_v1.rda") # hidden
+# load("data/data.rda") # hidden coordinates
 
 # set arguments
 simple <- FALSE # TRUE does not work with Clumpak, but FALSE does (in this case Structure results need not to contain popoulation labels)
@@ -166,7 +166,6 @@ dlabs <- dlabs[order(as.character(dlabs$LABEL)),]
 # if (write) write.table(dlabs, file = file.path(dirname(ofolder), "labelfile.txt"), quote = FALSE, row.names = FALSE, col.names = FALSE, sep = " ")
 
 ## Write ordered STRUCTURE results files to use as CLUMPAK input files
-# 
 for (file in files) {
   dat <- data.frame(t(sapply(strsplit(ReadAndClean(file), split = " "), function(x) matrix(x))))
   K <- ncol(dat)-4
