@@ -12,6 +12,7 @@
 
   - Randomly select a number of SNPs from a `*.vcf` file of filtered SNPs, with low missingness per genomic region
   - Create a corresponding input file for [STRUCTURE](https://web.stanford.edu/group/pritchardlab/structure.html) (Pritchard et al., 2000)
+  - Sort STRUCTURE output based on population structure / geo-coordinates for visualization using [CLUMPAK](http://clumpak.tau.ac.il/)
 
 ## Further Reading
 - https://grunwaldlab.github.io/Population_Genetics_in_R/Introduction.html
