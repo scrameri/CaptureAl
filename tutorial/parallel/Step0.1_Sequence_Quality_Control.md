@@ -2,21 +2,10 @@
 
 # Preprocessing Step 0.1: Sequence Quality Control
 
-## 1) run.fastqc.sh
-
-```
-1_fastqc_raw.sh
-```
-
-**Arguments**
-```
-# Required
-None. The script looks for all files ending in *fastq.gz and uses 10 parallel threads to run FASTQC using the adaptor file adapters.txt
-```
+## 1) [1_fastqc_raw.sh](https://github.com/scrameri/CaptureAl/wiki/1_fastqc_raw.sh)
 
 **Depends on**
 ```
-make.FASTQC.html.page.sh
 adapters.txt
 ```
 
@@ -32,19 +21,8 @@ cd NovaSeq-run1_raw
 **Usage**
 [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) already provides a visualization of the results via .html files. However, if you work with many samples, you'd need to inspect dozens or hundreds of such files manually. CaptureAl provides a concise visualization of up to hundred or more `*_fastqc.zip` result files, in a single PDF file of 18 pages. Some plots show the distribution of key statistics across all samples, while other plots show detailled statistics on a per-sample basis using `ggplot2` and facets for a direct comparison across samples.
 
-The FastQC plotting function is `plot.fastqc.R`. It's arguments can be seen by executing the function without arguments. They are:
+The FastQC plotting function is [plot.fastqc.R](https://github.com/scrameri/CaptureAl/wiki/plot.fastqc.R). It's arguments can be seen by clicking on the link (to the wiki page) or by executing the function without arguments.
 
-```
-plot.fastqc.R <file> <outputfile> <integer> <integer>
-```
-
-**Arguments**
-```
-1) file with paths to `*_fastqc.zip` files to process
-2) PDF name (default: "fastqc.pdf")
-3) PDF height (default: 12 inches)
-4) PDF width (default: 12 inches)
-```
 
 **Example**
 ```bash
