@@ -4,10 +4,12 @@
 
 ## 1) [trim.fastq.sh](https://github.com/scrameri/CaptureAl/wiki/trim.fastq.sh)
 
-[samples.fabaceae.12.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/samples.fabaceae.12.txt)
+This performs read trimming for 12 samples [samples.fabaceae.12.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/samples.fabaceae.12.txt) with paired-end data (files ending in `_R1.fastq.gz` and `_R2.fastq.gz`) located ind the `NovaSeq-run1_raw` directory.
+
+It uses adapter sequences from [adapters.fasta](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/adapters.fasta) and performs trimming in parallel using 12 threads.
 
 ```
-trim.fastq.sh -s samples.fabaceae.12.txt -a illumina.truseq.indexing.adaptors -r NovaSeq-run1_raw -x '_R1.fastq.gz,_R2.fastq.gz' -t 20
+trim.fastq.sh -s samples.fabaceae.12.txt -a adapters.fasta -r NovaSeq-run1_raw -x '_R1.fastq.gz,_R2.fastq.gz' -t 12
 ```
 
 ## Continue
