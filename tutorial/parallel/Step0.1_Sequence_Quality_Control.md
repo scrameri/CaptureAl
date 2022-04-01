@@ -4,11 +4,11 @@
 
 ## 1) [run.fastqc.sh](https://github.com/scrameri/CaptureAl/wiki/run.fastqc.sh)
 
-Runs [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) for 12 samples given in [samples.dalbergia.12.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/samples.dalbergia.12.txt) in parallel, using sequences in [adapters.fasta](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/adapters.fasta) to estimate adaptor content.
+Runs [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) for 12 samples given in [samples.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/samples.txt) in parallel, using sequences in [adapters.fasta](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/adapters.fasta) to estimate adaptor content.
 
 **Example**
 ```
-run.fastqc.sh -s samples.dalbergia.12.txt -d NovaSeq-run1_raw -a adapters.fasta -t 12
+run.fastqc.sh -s samples.txt -d NovaSeq-run1_raw -a adapters.fasta -t 12
 ```
 
 ## 2) [plot.fastqc.R](https://github.com/scrameri/CaptureAl/wiki/plot.fastqc.R)
