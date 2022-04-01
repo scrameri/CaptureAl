@@ -42,8 +42,8 @@ if [ ! -d ${out}/logs ] ; then mkdir ${out}/logs ; fi
 cp ${sfile} ${out}
 
 # get read pairs as arrays
-reads1=($(ls -1d ${in}/${name}* |sed 's!.*/!!' | grep -E '.*[_.]R1[_.].*'))
-reads2=($(ls -1d ${in}/${name}* |sed 's!.*/!!' | grep -E '.*[_.]R2[_.].*'))
+reads1=$(ls -1d ${in}/${name}[_.]R1[_.]*gz |sed 's!.*/!!')
+reads2=$(ls -1d ${in}/${name}[_.]R2[_.]*gz |sed 's!.*/!!')
 len=$(echo ${#reads1[@]})
 
 # run job in loop for every read pair files per sample 
@@ -55,14 +55,14 @@ do
 	read2=${in}/$(echo ${reads2[c]})
 	
 	# output
-	trim1=${out}/$(echo $(basename $read1) | sed -E 's/(.*)[_.]R1[_.](.*)/\1.trim1.\2/')
-	trim2=${out}/$(echo $(basename $read2) | sed -E 's/(.*)[_.]R2[_.](.*)/\1.trim2.\2/')
+	trim1=${out}/$(echo $(basename $read1) | sed -E 's/(.*)[_.]R1[_.](.*)([.fq|.fastq].gz)/\1.trim1.fastq.gz/')
+	trim2=${out}/$(echo $(basename $read2) | sed -E 's/(.*)[_.]R2[_.](.*)([.fq|.fastq].gz)/\1.trim2.fastq.gz/')
 	
-	unp1=${out}/logs/$(echo $(basename $read1) | sed -E 's/(.*)[_.]R1[_.](.*)/\1.U1.\2/')
-	unp2=${out}/logs/$(echo $(basename $read2) | sed -E 's/(.*)[_.]R2[_.](.*)/\1.U2.\2/')
+	unp1=${out}/logs/$(echo $(basename $read1) | sed -E 's/(.*)[_.]R1[_.](.*)([.fq|.fastq].gz)/\1.U1.fastq.gz/')
+	unp2=${out}/logs/$(echo $(basename $read2) | sed -E 's/(.*)[_.]R2[_.](.*)([.fq|.fastq].gz)/\1.U2.fastq.gz/')
 	
-	log=${out}/logs/$(echo $(basename $read1) | sed -E 's/(.*)[_.]R1[_.](\w+)(.f.*q.gz)/\1_\2.log/')
-	err=${out}/logs/$(echo $(basename $read1) | sed -E 's/(.*)[_.]R1[_.](\w+)(.f.*q.gz)/\1_\2.err/')
+	log=${out}/logs/$(echo $(basename $read1) | sed -E 's/(.*)[_.]R1[_.](.*)([.fq|.fastq].gz)/\1.log/')
+	err=${out}/logs/$(echo $(basename $read1) | sed -E 's/(.*)[_.]R1[_.](.*)([.fq|.fastq].gz)/\1.err/')
 	
 	# trim default
 	#trimmomatic PE -threads 2 -phred33 ${read1} ${read2} ${trim1} ${unp1} ${trim2} ${unp2} ILLUMINACLIP:${adapter}:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:50 > ${log}  2> ${err}
