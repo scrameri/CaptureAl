@@ -30,7 +30,7 @@ This performs several consecutive steps, for multiple samples specified in [samp
 get.coverage.stats.sh -s samples.txt -Q 20 -t 20
 ```
 
-## 3) [filter.visual.coverages.sh]()https://github.com/scrameri/CaptureAl/wiki/filter.visual.coverages.sh
+## 3) [filter.visual.coverages.sh](https://github.com/scrameri/CaptureAl/wiki/filter.visual.coverages.sh)
 
 This filters samples and loci (target regions) with poor sequence data, taking taxon groups into account and using filtering thresholds informed by comprehensive visualizations.
 
