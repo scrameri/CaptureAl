@@ -7,40 +7,11 @@
 ![Step.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/CaptureAl_Step2.png)
 
 
-## 1) extract.readpairs.sh
+## 1) [extract.readpairs.sh](https://github.com/scrameri/CaptureAl/wiki/extract.readpairs.sh)
 
-**Usage**
-```
-extract.readpairs.sh -s <sample file> -l <locus file> -d <directory> -m <directory> -Q <integer> -t <integer>
-```
+This creates an output directory with a subdirectory for each sample in [samples.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/tutorial/data/samples.txt), containing read pairs extracted from `*fastq.gz` files in `NovaSeq-run1_trimmed`. Only read pairs where one or both reads mapped to the reference sequence of a locus in [loci.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/tutorial/data/loci.txt) are extracted, as determined by mapping results in `NovaSeq-run1_mapped` and `-Q`.
 
-**Arguments**
-```
-# Required
--s                  sample file
--l                  locus file
--d                  absolute path to folder with quality-filtered reads
--m                  absolute path to folder with mapping dirs
-
-# Optional [DEFAULT]
--o  [seq-extracted] output directory (created if inexistent)
--Q  [10]            minimum mapping quality, as used for mapping using run.bwamem.sh
--b  [see details]   regex-path to BAM file. Use SAMPLE as wildcard.
--t  [2]             number of threads used
-```
-
-**Details**
-```
--b    <SAMPLE> can be part of the string and will be replaced by the actual sample using regex,
-      DEFAULT: <${mapdir}/SAMPLE/SAMPLE.bwa-mem.sorted.Q10.nodup.bam>."
-
-```
-
-**Depends on**
-```
-extract-reads-from-fastq.pl
-```
-
+It is highly recommended to run this on a local scratch, due to the large number of files written.
 
 **Example**
 ```
@@ -48,29 +19,11 @@ extract.readpairs.sh -s samples.txt -l loci.txt -d NovaSeq-run1_trimmed -m NovaS
                      -b NovaSeq-run1_mapped/SAMPLE/SAMPLE.bwa-mem.sorted.Q10.nodup.bam -Q 10 -t 20
 ```
 
-## 2) run.dipspades.sh
+## 2) [run.dipspades.sh](https://github.com/scrameri/CaptureAl/wiki/run.dipspades.sh)
 
-**Usage**
-```
-run.dipspades.sh -s <sample file> -r <directory> -t <integer>
-```
+This assembles the extracted reads of each locus and each sample using dipSPAdes.
 
-**Arguments**
-```
-# Required
--s          Sample file (will look for extracted reads of samples in ${r}/${sample}.targets)
--r          Absolute path to extracted read pairs
-
-# Optional [DEFAULT]
--t    [15]  Number of parallel threads: the parallelization is over reference sequences,
-            not over individuals (these are assembled one after the other)
-```
-
-**Depends on**
-```
-submit-commands-var.pl
-```
-
+It is highly recommended to run this on a local scratch, due to the large number of files written.
 
 **Example**
 ```
