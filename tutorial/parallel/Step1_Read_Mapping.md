@@ -11,10 +11,11 @@
 
 This maps the reads of samples specified in [samples.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/samples.txt) located in the `NovaSeq_run1_trimmed` directory against a [reference.fasta](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/reference.fasta) FASTA file.
 
-It assumes *paired-end* reads located in separate files, e.g. `BEN001.trim1.fastq.gz` and `BEN001.trim2.fastq.gz` for sample *BEN001*. It further processes 4 samples in parallel, but performs hyper-threading for each sample, using 5 times as many threads as specified in `-t`.
+In this example, it assumes *paired-end* reads located in separate files, e.g. `BEN001.trim1.fastq.gz` and `BEN001.trim2.fastq.gz` for sample *BEN001*. It further processes 4 samples in parallel, but performs hyper-threading for each sample, using 5 times as many threads as specified in `-t`.
 
 After mapping using a `-T` quality threshold, the BAM files are further filtered for high-quality mappings (`-Q` option), and PCR duplicates are removed using [Picard Tools](https://broadinstitute.github.io/picard/).
 
+**Example**
 ```
 run.bwamem.sh -s samples.txt -r reference.fasta -e '.trim1.fastq.gz,.trim2.fastq.gz' -T 10 -Q 20 \
               -d NovaSeq_run1_trimmed -t 4
