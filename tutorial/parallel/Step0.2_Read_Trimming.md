@@ -4,7 +4,7 @@
 
 ## 1) [trim.fastq.sh](https://github.com/scrameri/CaptureAl/wiki/trim.fastq.sh)
 
-[samples.fabaceae.12.txt]()
+[samples.fabaceae.12.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/samples.fabaceae.12.txt)
 
 ```
 trim.fastq.sh -s samples.fabaceae.12.txt -a illumina.truseq.indexing.adaptors -r NovaSeq-run1_raw -x '_R1.fastq.gz,_R2.fastq.gz' -t 20
