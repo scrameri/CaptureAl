@@ -7,58 +7,20 @@
 ![Step.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/CaptureAl_Step1.png)
 
 
-## 1) run.bwamem.sh
+## 1) [run.bwamem.sh](https://github.com/scrameri/CaptureAl/wiki/run.bwamem.sh)
 
-**Usage**
-```
-run.bwamem.sh -s <file> -r <file> -e <string> -d <directory> -T <positive integer> -Q <positive integer> \ 
-              -o <directory> -t <positive integer>
-```
+This maps the reads of samples specified in [samples.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/samples.txt) located in the `NovaSeq_run1_trimmed` directory against a [reference.fasta](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/reference.fasta) FASTA file.
 
-**Arguments**
-```
-# Required
--s        File with sample names (without header or '>')
--r        File with reference sequences (FASTA format)
--e        Sample file extension(s). E.g. '.fasta' or '.trim.fq.gz' [unpaired] or '.trim1.fastq,.trim2.fastq' [paired].
-          The program then interprets if data is unpaired or paired. Separate file extensions of file pairs with a ','.
+It assumes *paired-end* reads located in separate files, e.g. `BEN001.trim1.fastq.gz` and `BEN001.trim2.fastq.gz` for sample *BEN001*. It further processes 4 samples in parallel, but performs hyper-threading for each sample, using 5 times as many threads as specified in `-t`.
 
-# Optional [DEFAULT]
--d  [pwd] Path to input reads.
--T  [10]  Minimum bwa mem alignment score, passed to -T parameter of bwa mem.
--Q  [20]  Minimum mapping quality, used to filter by the fifth field / MAPQ column in BAM files. Must be Q >= T.
--o  [pwd] Path to output directory. A folder will be created if it does not exist.
--t  [3]   Number of samples processed in parallel.
-          Can be between 1 (uses ${cpu} CPU cores in total) and 6 (uses 6*${cpu} CPU cores in total, cpu=4).
+After mapping using a `-T` quality threshold, the BAM files are further filtered for high-quality mappings (`-Q` option), and PCR duplicates are removed using [Picard Tools](https://broadinstitute.github.io/picard/).
+
+```
+run.bwamem.sh -s samples.txt -r reference.fasta -e '.trim1.fastq.gz,.trim2.fastq.gz' -T 10 -Q 20 \
+              -d NovaSeq_run1_trimmed -t 4
 ```
 
-**Details**
-```
--s  The sample file must contain the sample basenames (i.e., sample name without file extensions specified in -e).
-    Use a single line for paired reads in two files, e.g. the sample basename for files 'SH598_S16.trim1.fastq.gz'
-    and 'SH598_S16.trim2.fastq.gz' would be 'SH598_S16' if -e is set to '.trim1.fastq.gz,.trim2.fastq.gz'.
-
--Q  A value above 0 will filter reads with multiple mappings. Only reads passing the -Q filter will be written to
-    the output directory, after removing PCR duplicates using the picard MarkDuplicates tool.
-```
-
-**Depends on**
-```
-bwa
-sambamba
-java
-python
-picard-tools
-r
-```
-
-
-**Example**
-```
-run.bwamem.sh -s samles.txt -r ref.fasta -e '.trim1.fastq.gz,.trim2.fastq.gz' -T 10 -Q 20 -d NS-run1_trimmed -t 4
-```
-
-## 2) get.coverage.stats.sh
+## 2) [get.coverage.stats.sh](https://github.com/scrameri/CaptureAl/wiki/get.coverage.stats.sh)
 
 **Usage**
 ```
