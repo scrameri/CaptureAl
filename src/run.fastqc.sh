@@ -21,6 +21,8 @@ done
 
 
 # check input
+currentdir=$(pwd)
+
 if [ ! $sfile ] ; then echo "sample file (-s option) not specified, stopping" ; exit 0 ; fi
 if [ ! -f $sfile ] ; then echo "sample file <$sfile> not found, stopping." ; exit 0 ; fi
 
@@ -28,7 +30,7 @@ if [ ! $adapters ] ; then echo "adapter file (-a option) not specified, stopping
 if [ ! -f $adapters ] ; then echo "adapter file <$adapters> not found, stopping." ; exit 0 ; fi
 
 if [ ! $in  ] ; then echo "path to reads (-d option) not specified, using current directory" ; in=$currentdir ; fi
-if [ ! $out  ] ; then echo "path to output directory (-o option) not specified, using current directory" ; out=$currentdir ; fi
+if [ ! $out  ] ; then echo "path to output directory (-o option) not specified, using ${in}/fastqc" ; out=${in}/fastqc ; fi
 
 if [ ! $threads  ] ; then echo "number of threads (-t option) not specified, using -t 16." ; threads=16 ; fi
 if [ "$threads" -gt 30 ] ; then echo "number of threads (-t option) too large, setting -t 16." ; threads=16 ; fi
@@ -59,6 +61,7 @@ doFASTQC() {
 	
 		if [ -f $file ]
 		then
+			echo "processing $(basename $file)"
 			fastqc $file -t 1 -a ${adapters} -o ${out}
 		fi
 	
