@@ -1,5 +1,11 @@
 #!/bin/bash
 
+## Usage
+#run.fastqc.sh -s <samples.txt> -a <adapters.fasta> -d <input directory> -o <output directory> -t <threads>
+
+## Needs
+# fastqc
+
 ## Define arguments
 while getopts s:a:d:o:t: opts
 do
