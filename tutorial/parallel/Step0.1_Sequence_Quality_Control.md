@@ -2,18 +2,16 @@
 
 # Preprocessing Step 0.1: Sequence Quality Control
 
-## 1) [1_fastqc_raw.sh](https://github.com/scrameri/CaptureAl/wiki/1_fastqc_raw.sh)
+## 1) [run.fastqc.sh](https://github.com/scrameri/CaptureAl/wiki/run.fastqc.sh)
 
-**Depends on**
-```
-adapters.txt
-```
+The script looks for `*fastq.gz` files in the current directory, and runs [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) for all samples in parallel, using .
 
+Place a file [adapters.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/adapters.fasta) in your current working directory, containing FASTA-formatted sequences that are known as adaptor sequences. These will be used to compute the adapter content. 
 
 **Example**
 ```
 cd NovaSeq-run1_raw
-../1_fastqc_raw.sh
+1_fastqc_raw.sh
 ```
 
 ## 2) Visualize FastQC results as a PDF
