@@ -7,116 +7,28 @@
 ![Step.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/CaptureAl_Step3.png)
 
 
-## 1) select.best.contigs.per.locus.sh
-
-**Usage**
-```
-select.best.contigs.per.locus.sh -s <file> -l <file> -r <file> -d <director<> -t <integer>
-```
-
-**Arguments**
-```
-# Required
--s  .txt file with names of retained samples (without header or '>')
--l  .txt file with names of retained target regions (without header or '>')
--r  FASTA file with reference sequences
--d  path to input directory with assembled contigs
-
-# Optional [DEFAULT]
--c  [see details]       regex path from input directory to contigs. Use 'SAMPLE' and 'LOCUS' as wildcards.
--g  [off]               FLAG, if given, will NOT write query and target ranges to .exonerate output> [DEFAULT: --]
--m  ['affine:local']    alignment model [DEFAULT: `affine:local`]
--t  [15]                number of parallel threads.
-
-
-```
-
-**Details**
-```
-# Path from input directory to contigs FASTA file
--c          The default setting assumes the following file naming convention (optimized for assembly using SPAdes):
-            `SAMPLE.dipspades/extracted_reads_SAMPLE.fastq.LOCUS.ids.spades/dipspades/consensus_contigs.fasta`
-
-# EXONERATE gapped alignment options (from https://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate-manual)
--m          affine:global
-            
-            This performs gapped global alignment, similar to the Needleman-Wunsch algorithm, except with affine
-            gaps. Global alignment requires that both the sequences in their entirety are included in the alignment.
-
-            affine:bestfit
-
-            This performs a best fit or best location alignment of the query onto the target sequence.
-            The entire query sequence will be included in the alignment, but only the best location for its
-            alignment on the target sequence.
-
-            affine:local
-               
-            This is local alignment with affine gaps, similar to the Smith-Waterman-Gotoh algorithm. A general-purpose
-            alignment algorithm. As this is local alignment, any subsequence of the query and target sequence may appear
-            in the alignment.
-```
-
-**Depends on**
-```
-exonerate
-extract.all.fasta.seqs.R
-```
+## 1) [select.best.contigs.per.locus.sh](https://github.com/scrameri/CaptureAl/wiki/select.best.contigs.per.locus.sh)
 
 
 **Example**
 ```
-select.best.contigs.per.locus.sh -s samples.txt -l loci.txt -r reference.fasta -d NovaSeq-run1_assemblies -t 20
+select.best.contigs.per.locus.sh -s samples.txt -l loci.txt -r reference.fasta -d NovaSeq-run1_assembly -t 20
 ```
 
 
-## 2) combine.contigs.parallel.sh
+## 2) [combine.contigs.parallel.sh](https://github.com/scrameri/CaptureAl/wiki/combine.contigs.parallel.sh)
 
-**Usage**
-```
-combine.contigs.parallel.sh -s <file> -d <directory> -a <integer> -c <integer> -t <integer>
-```
-
-**Arguments**
-```
-# Required
--s  .txt file with sample names (without header or '>')
--d  path to directory with exonerate results
-
-# Optional [DEFAULT]
--a  [80]    minimum target alignment length (bp).
--c   [2]    minimum normalized alignment score (i.e., raw score divided by target alignment length).
--t   [4]    number of parallel threads.
-
-```
-
-**Depends on**
-```
-combine.contigs.R
-```
-
+This reads the assembled contigs per sample and individual (from the directory passed via `-d`) and the best-matching contig and exonerate alingment statistics (from the directory passed via `-e`), and combines non-overlapping contigs if they pass the requirements passed via `-a` (minimum target alingment length) and `-c` (minimum normalmized alingment score)
 
 **Example**
 ```
-combine.contigs.parallel.sh -s samples.txt -d NovaSeq-run1_exonerate -a 1 -c 1 -t 20
+combine.contigs.parallel.sh -s samples.txt -d NovaSeq-run1_assembly -e NovaSeq-run1_exonerate -a 80 -c 2 -t 20
 ```
 
 
-## 3) collect.exonerate.stats.R
+## 3) [collect.exonerate.stats.R](https://github.com/scrameri/CaptureAl/wiki/collect.exonerate.stats.R)
 
-**Usage**
-```
-collect.exonerate.stats.R <sample file> <OPTIONAL: directory> <OPTIONAL: string>
-```
-
-**Arguments**
-```
-# Required
-1) <sfile|CHR>:  path to sample file containing paths to mapping directories
-
-# Optional [DEFAULT] (if one or more is given, they must be given in this order)
-2) <dir|CHR>:    folder with subdirectories for each sample [DEFAULT: current directory ]
-3) <suffix|CHR>: sample suffix present in <sfile> and absent in <dir> subdirectories  [DEFAULT: '']
-```
+This collects all relevant assembly statistics of all samples. These statistics are needed for the upcoming pipeline step 4 (sample and target region filtering). The file `loci_stats.txt` is the main requirement for step 4, the file `loci_contignumbers.txt` can be plotted (see 4) below).
 
 **Example**
 ```
@@ -124,25 +36,15 @@ collect.exonerate.stats.R samples.txt NovaSeq-run1_exonerate
 ```
 
 
-## 4) plot.contig.numbers.R
+## 4) [plot.contig.numbers.R](https://github.com/scrameri/CaptureAl/wiki/plot.contig.numbers.R)
 
-**Usage**
-```
-plot.contig.numbers.R <contig number file> <taxon group file>
-```
+Visualize the file `loci_contignumber.txt` produced in the previous step. This should give an idea on how many target regions are represented by single vs. multiple contigs (capture specificity), and how many target regions have no contig (capture sensitivity).
 
-**Arguments**
-```
-# Required
-1) <file|CHR>: path to collected contig numbers (loci_contignumbers.txt)
-
-# Optional [DEFAULT] (if one or more is given, they must be given in this order)
-2) <meta|CHR>: path to metadata file mapping individuals (1st column) to groups (2nd column). Header and tab separation expected. More individuals in different order than in <file> are ok.
-```
+If a taxon group map file such as [mapfile.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/mapfile.txt) is provided (second argument), the resulting box plot is plotted by taxon groups.
 
 **Example**
 ```
-plot.contig.numbers.R loci_contignumbers.txt samples.mapfile.txt
+plot.contig.numbers.R loci_contignumbers.txt mapfile.txt
 ```
 
 
