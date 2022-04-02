@@ -47,7 +47,7 @@ collect.exonerate.stats.R samples.txt NovaSeq-run1_exonerate
 
 ## 4) [plot.contig.numbers.R](https://github.com/scrameri/CaptureAl/wiki/plot.contig.numbers.R)
 
-This visualizes the file `loci_contignumber.txt` produced in the previous step. This should give an idea on how many target regions are represented by single vs. multiple contigs (capture specificity), and how many target regions have no contig (capture sensitivity).
+This visualizes the file `loci_contignumbers.txt` produced in the previous step. This should give an idea on how many target regions are represented by single vs. multiple contigs (capture specificity), and how many target regions have no contig (capture sensitivity).
 
 If a taxon group map file such as [mapfile.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/mapfile.txt) is provided (second argument), the resulting box plot is plotted by taxon groups.
 
