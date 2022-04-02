@@ -33,11 +33,13 @@ get.coverage.stats.sh -s samples.txt -Q 20 -t 20
 
 ## 3) [filter.visual.coverages.sh](https://github.com/scrameri/CaptureAl/wiki/filter.visual.coverages.sh)
 
-This filters samples and loci (target regions) with poor sequence data, taking taxon groups into account and using filtering thresholds informed by comprehensive visualizations.
+This filters samples and loci (target regions) with poor sequence data based on coverage statistics in [coverage_stats.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/coverage_stats.txt) produced in the previous step. Filtering can take taxon groups in [mapfile.txt](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/mapfile.txt) into account, and filtering thresholds can be informed by comprehensive visualizations.
+
+The FASTA file [reference.fasta](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/reference.fasta) is used to compute target region GC content, which will be visualized as a co-variate.
 
 **Example**
 ```
-filter.visual.coverages.sh -s samples.mapfile.txt -t coverage_stats.txt -r reference.fasta \
+filter.visual.coverages.sh -s mapfile.txt -t coverage_stats.txt -r reference.fasta \
                            -a 0.2 -b 0.4 -c 1 -d 8 -e 1000 -f 0 -p 0.4
 ```
 
