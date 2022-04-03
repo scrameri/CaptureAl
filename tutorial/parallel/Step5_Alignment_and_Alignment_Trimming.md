@@ -36,10 +36,10 @@ The [mapfile.txt](https://github.com/scrameri/CaptureAl/blob/master/tutorial/dat
 **Example**
 ```
 # no visualization
-trim.alignment.ends.parallel.sh -s mapfile.dalbergia.txt -d mafft.63.2396 -c 0.5 -n 0.25 -t 20
+trim.alignment.ends.parallel.sh -s mapfile.txt -d mafft.63.2396 -c 0.5 -n 0.25 -t 20
 
 # with visualization
-trim.alignment.ends.parallel.sh -s mapfile.dalbergia.txt -d mafft.63.2396 -c 0.5 -n 0.25 -t 20 -v
+trim.alignment.ends.parallel.sh -s mapfile.txt -d mafft.63.2396 -c 0.5 -n 0.25 -t 20 -v
 ```
 
 ## 4) [trim.alignments.parallel.sh](https://github.com/scrameri/CaptureAl/wiki/trim.alignments.parallel.sh)
@@ -51,13 +51,13 @@ The [mapfile.txt](https://github.com/scrameri/CaptureAl/blob/master/tutorial/dat
 **Example**
 ```
 # no visualization
-trim.alignments.parallel.sh -s mapfile.dalbergia.txt -d mafft.63.2396.c0.5.n0.25 -c 0.4 -z 20 -S 1 -n 0.5 -t 20
+trim.alignments.parallel.sh -s mapfile.txt -d mafft.63.2396.c0.5.n0.25 -c 0.4 -z 20 -S 1 -n 0.5 -t 20
 
 # with visualization
-trim.alignments.parallel.sh -s mapfile.dalbergia.txt -d mafft.63.2396.c0.5.n0.25 -c 0.4 -z 20 -S 1 -n 0.5 -t 20 -v
+trim.alignments.parallel.sh -s mapfile.txt -d mafft.63.2396.c0.5.n0.25 -c 0.4 -z 20 -S 1 -n 0.5 -t 20 -v
 
 # with visualization and internal trimming
-trim.alignments.parallel.sh -s mapfile.dalbergia.txt -d mafft.63.2396.c0.5.n0.25 -c 0.4 -z 20 -S 1 -n 0.5 -t 20 -iv
+trim.alignments.parallel.sh -s mapfile.txt -d mafft.63.2396.c0.5.n0.25 -c 0.4 -z 20 -S 1 -n 0.5 -t 20 -iv
 ```
 
 ## Continue
