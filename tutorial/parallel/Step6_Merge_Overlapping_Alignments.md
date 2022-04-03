@@ -7,88 +7,33 @@
 ![Step.png](https://raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/CaptureAl_Step6.png)
 
 
-## 1) get.consensus.from.alignment.parallel.sh
+## 1) [get.consensus.from.alignment.parallel.sh](https://github.com/scrameri/CaptureAl/wiki/get.consensus.from.alignment.parallel.sh)
 
-**Usage**
-```
-get.consensus.from.alignment.parallel.sh -s <file> -d <directory> -m <positive integer> \
-                                         -b <positive numeric> -t <positive integer> -gnv
-```
-
-**Arguments**
-```
-# Required
--s                  File with names of samples considered during consensus calculation (without header or '>').
--d                  Path to directory with alignments.
-
-# Optional
--m   [0.05]         Minimum allele frequency to call a IUPAC ambiguity. Interpreted as 'minimum allele count' if >1.
--b    [0.5]         Minimum base frequency to return a consensus (major allele or IUPAC ambiguity) instead of a gap.
-                    Interpreted as 'minimum base count' if >1.
--g  [false]         FLAG, if turned on, then '-' characters will be ignored during consensus calculation.
--n  [false]         FLAG, if turned on, then 'N' characters will be ignored during consensus calculation.
--a  [false]         Prefix in consensus sequence name. If no prefix is desired, use 'FALSE' instead of ''.
--z  [false]         Suffix in consensus sequence name. If no suffix is desired, use 'FALSE' instead of ''.
--o  [see details]   Name of output directory.
--v  [false]         FLAG, if turned on, the alignment consensus will be visualized as a PDF
-                    (recommended for few alignments only).
--w     [15]         Width of output PDF file.
--h      [7]         Height of output PDF file.
--t      [4]         Number of parallel threads.
-```
-
-**Details**
-```
-By default, this script creates an output directory of the form '<input directory>.cons-${m}-${b}',
-containing a file for every alignment, with the consensus sequence.
-```
-
-**Depends on**
-```
-get.consensus.from.alignment.R
-
-# R packages
-ape
-```
-
+This creates an output directory with a FASTA consensus sequence for each alignment in `mafft.63.2396.c0.5.d0.25`, considering samples in [samples.txt](raw.githubusercontent.com/scrameri/CaptureAl/master/tutorial/data/samples.txt).
 
 **Example**
 ```
 # Consensus with IUPAC ambiguity codes (m = 0.2), gaps, Ns, but no visualization
 get.consensus.from.alignment.parallel.sh -s samples.txt -d mafft.63.2396.c0.5.d0.25 -m 0.2 -b 0.01 -t 20
+```
 
+If the `-g` flag is turned on, any site where the computed consensus is a gap (`-`) is removed from the consensus sequence (recommended to turn this on depending on the alignment software used to map against the consensus sequence). 
+
+If the `-n` flag is turned on, any site where the computed consensus is `N` is removed from the consensus sequence (it's generally not recommended to turn this on).
+
+If the `-v` flag is turned on, the alignment and consensus sequence are visualized as a PDF file (only recommended for a small alignment number).
+
+```
 # Consensus of the major alleles (m = 1), no gaps, no Ns, but with visualization
 get.consensus.from.alignment.parallel.sh -s samples.txt -d mafft.63.2396.c0.5.d0.25 -m 1 -b 0.01 -t 20 -gnv
 ```
 
-## 2) rename.fasta.headers.R
 
-**Usage**
-```
-rename.fasta.headers.R <file> <string> <BOOLEAN> <BOOLEAN>
-```
+## 2) [rename.fasta.headers.R](https://github.com/scrameri/CaptureAl/wiki/rename.fasta.headers.R)
 
-**Arguments**
-```
-# Required
-1) <file|CHR>:          path to .fasta file.
-2) <pattern1|CHR|LOG>:  1st regex pattern to globally replace with ''.  All, not only the first, will be replaced.
-                        If FALSE ('FALSE', 'F', 'false', 'f', 'False'), no replacement is done.
-                        
-3) <pattern2|CHR|LOG>:  2nd regex pattern to globally replace with ''. All, not only the first, will be replaced.
-                        If FALSE ('FALSE', 'F', 'false', 'f', 'False'), no replacement is done.
-4) <splitchar|CHR|LOG>: Split character. Only the string to the left of the split will be retained. Can be multi-character.
-                        If FALSE ('FALSE', 'F', 'false', 'f', 'False'), no string splitting is done.
+This fixes the FASTA sequence identifiers, which got altered with suffixes by mapping and trimming. 
 
-# Optional
---
-```
-
-**Depends on**
-```
---
-```
-
+Be careful, the renaming is potentially irreversible. Therefore, it is recommended to test it on a copy of your FASTA first.
 
 **Example**
 ```
