@@ -71,74 +71,24 @@ This identifies target regions with physical overlap based on [BLAST+](https://s
 find.overlapping.alignments.R consensus.vs.self.blast.filtered TRUE 'LG_' '_'
 ```
 
-## 5) align.overlapping.contigs.sh
+## 5) [align.overlapping.contigs.sh](https://github.com/scrameri/CaptureAl/wiki/align.overlapping.contigs.sh)
 
-**Usage**
-```
-align.overlapping.contigs.sh -l <file> -c <directory> -m <string> -t <positive integer>
-```
+This performs an alignment of contigs from overlapping target regions listed in `consensus.blast.filtered.list`.
 
-**Arguments**
-```
-# Required
--l                 Path with list of regions to be merged. Usually the output of find.overlapping.alignments.R,
-                   which produces a file ending in '.blast.filtered.list'.
--c                 Path to directory with multifasta files, containing FASTA files with unaligned contigs.
+An output directory is created named 'mafft.overlapping.${N}', where ${N} is the number of overlapping alignments passed with `-l`.
 
-# Optional
--m  ['localpair']  Alignment model. Passed on to mafft.
--x  ['']           Prefix of sequence name in input file (-l option) but missing in multifasta sequence names.
--y  ['']           Suffix of sequence name in input file (-l option) but missing in multifasta sequence names.
--t  [4]            Number of parallel threads.
-```
-
-**Details**
-```
-This script creates an output directory of the form 'mafft.overlapping.${N}', where ${N} is the number of 
-overlapping alignments passed with -l.
-```
-
-**Depends on**
-```
-mafft
-awk
-get.overlap.consensus.R
-```
-
+That directory contains the merged alignment (to be used for trimming and to be combined with alignments of non-overlapping regions), but also statistics (`*.log`) and a visualization (`*.pdf`) of the merging procedure, which can be used to decide whether merging was successful.
 
 **Example**
 ```
 align.overlapping.contigs.sh -l consensus.blast.filtered.list -c multifasta.63.2396 -m 'localpair' -t 20
 ```
 
-## 6) filter.merged.alignments.sh
+## 6) [filter.merged.alignments.sh](https://github.com/scrameri/CaptureAl/wiki/filter.merged.alignments.sh)
 
-**Usage**
-```
-filter.merged.alignments.sh -d <directory> -s <numeric fraction>
-```
+This filters any overlapping alignments in `mafft.overlapping.15` that have an alignment score < 0.95.
 
-**Arguments**
-```
-# Required
--d          Path to directory with merged alignments.
-
-# Optional
--s  [0.95]  Minimum alignment score [between 0 and 1]. Overlapping alignments will only be retained if the
-            merging procedure in `align.overlapping.contigs.sh` was successful, as indicated by the 
-            visualizations and/or the alignment score.
-```
-
-**Details**
-```
-This script filters merged alignments by moving unsuccessfully merged alignments to a separate subdirectory.
-```
-
-**Depends on**
-```
---
-```
-
+To decide on the optimal value for `-s`, it is recommended to compare the alignment scores (`*.log`) with the alignment visualiztions (`*.pdf`).
 
 **Example**
 ```
@@ -149,35 +99,9 @@ filter.merged.alignments.sh -d mafft.overlapping.15 -s 0.95
 ## Apply trimming as in [Step 5](Step5_Alignment_and_Alignment_Trimming.md)
 
 
-## 7) replace.overlapping.alignments.R
+## 7) [replace.overlapping.alignments.R](https://github.com/scrameri/CaptureAl/wiki/replace.overlapping.alignments.R)
 
-**Usage**
-```
-replace.overlapping.alignments.R <directory> <directory> <file>
-```
-
-**Arguments**
-```
-# Required
-1) <alndir|CHR>:     path to directory with overlapping fasta alignments to be replaced (mafft.NIND.NLOC.Y) ; 
-2) <mrgdir|CHR>:     path to directory with corresponding merged (and filtered) fasta alignments ('mafft.overlapping.X.Y') ;
-3) <mrglist|CHR>:    path to overlapping loci list ('mafft.NIND.NLOC.Y.consZ.vs.self.blast.filtered.list') ;
-       
-# Optional
-4) <revert|BOOLEAN>: if TRUE, will revert any previous filtering applied [DEFAULT: TRUE]
-```
-
-**Details**
-```
-This script replaces overlapping alignments in the first directory with filtered merged alignments in the
-second directory.
-```
-
-**Depends on**
-```
---
-```
-
+This replaces two or more (trimmed) overlapping alignments in `mafft.63.2396.c0.5.d0.25.c0.4.n0.5` with a corresponding single merged (trimmed) alignment, for all successfully merged alignments.
 
 **Example**
 ```
