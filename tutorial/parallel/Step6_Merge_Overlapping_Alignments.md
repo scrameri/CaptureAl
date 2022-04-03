@@ -49,71 +49,18 @@ rename.fasta.headers.R consensus.fasta '_LG_' '_Scaffold_' '__'
 ```
 
 
-## 3) blast.vs.self.sh
+## 3) [blast.vs.self.sh](https://github.com/scrameri/CaptureAl/wiki/blast.vs.self.sh)
 
-**Usage**
-```
-blast.vs.self.sh <file>
-```
-
-**Arguments**
-```
-# Required
-1)  Path to FASTA file.
-
-# Optional
---
-```
-
-**Details**
-```
-A BLAST+ database is created from the FASTA file, and the same sequences are used as query and target in a
-BLAST+ search with expect value (evalue) 1E-04.
-
-The results are then filtered to retain only hits between pairs of DIFFERENT sequences,
-and only ONE out of two reciprocal hits.
-```
-
-**Depends on**
-```
- blast.fasta.seqs.sh
- filter.blast.vs.self.R
-```
-
+This determines [BLAST+](https://scicomp.ethz.ch/public/manual/BLAST/BLAST.pdf) hits between pairs of different consensus sequences (i.e., alignments), and writes the filtered results (keeping one out of two reciprocal hits) to a file `*.blast.vs.self.blast.filtered`.
 
 **Example**
 ```
 blast.vs.self.sh consensus.fasta
 ```
 
-## 4) find.overlapping.alignments.R
+## 4) [find.overlapping.alignments.R](https://github.com/scrameri/CaptureAl/wiki/find.overlapping.alignments.R)
 
-**Usage**
-```
-find.overlapping.alignments.R <file> <BOOLEAN> <string> <string>
-```
-
-**Arguments**
-```
-# Required
-1) <bf|CHR>:                path to filtered blast vs. self results (*.blast.filtered) 
-     
-# Optional [DEFAULT] (if one or more are given, they need to be given in this order)
-2) <check.lg|BOOLEAN>:      if TRUE, checks linkage group (LG) conformity based on query and subject identifiers, string.lg.before and string.lg.after [DEFAULT: TRUE]
-3) <string.lg.before|CHR>:  unique string in locus name that comes just BEFORE the linkage group ID [DEFAULT: 'LG_']
-4) <string.lg.after|CHR>:   string in locus name that comes just AFTER the linkage group ID [DEFAULT: '_']
-5) <check.overlap|BOOLEAN>: if TRUE, checks whether hits are at alignment ends based on q/s.start/end and query/subject.length and <tol>/<both.ends> [DEFAULT: TRUE]
-6) <tol|NUM>:               alignments ending at <tol> basepairs from a query/subject start/end end will still be considered as being at an alignment end [DEFAULT: 5]
-7) <both.ends|BOOLEAN>:      if TRUE, both query and subject alignments need to be at an alignment end ; if FALSE, one is enough [DEFAULT: FALSE]
-8) <min.alnlen|NUM>:        minimum alignment length for hit to be considered [DEFAULT: 0]
-9) <min.percid|NUM>:        minimum percent identity for hit to be considered [DEFAULT: 0]
-```
-
-**Depends on**
-```
---
-```
-
+This identifies target regions with physical overlap based on [BLAST+](https://scicomp.ethz.ch/public/manual/BLAST/BLAST.pdf) hits among alignment consensus sequences.
 
 **Example**
 ```
