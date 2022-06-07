@@ -1,5 +1,7 @@
+## plot.treedata
 # ## debug
 # dt = NULL; astral = TRUE; ladderize = TRUE; print = TRUE; verbose = TRUE;
+# root = FALSE; outgroup = NULL;
 # root.add = 0.1; tip.add = 0.1; col.edge = "black"; size.edge = 0.25; alpha.edge = 1;
 # col.tip = "black"; size.tip = 2.5; adj.tip = -0.02; xmax = 0.3;
 # add.support = TRUE; size.support = 2; alpha.support = 1; legend.pos.support = "left";
@@ -14,6 +16,7 @@
 ## function to plot RAxML and ASTAL trees (with node pies)
 plot.treedata <- function(
   treedata, dt = NULL, ladderize = TRUE, print = TRUE, verbose = TRUE,
+  root = FALSE, outgroup = NULL,
   root.add = 0.1, tip.add = 0.1, col.edge = "black", size.edge = 0.25, alpha.edge = 1,
   col.tip = "black", size.tip = 2.5, adj.tip = -0.02, xmax = 0.3,
   add.support = TRUE, size.support = 2, alpha.support = 1, legend.pos.support = "left",
@@ -40,37 +43,133 @@ plot.treedata <- function(
   require("ggtree") # tested on v3.2.1
   require("treeio") # tested on v1.18.1
   
-  ## Set defaults
-  stopifnot(inherits(treedata, "treedata"))
-  astral <- all(pievars %in% colnames(treedata@data))
+  ## Define root.treedata helper functions by Guangchuang Yu
+  # https://rdrr.io/github/GuangchuangYu/treeio/src/R/utilities.R
+  # https://rdrr.io/github/YuLab-SMU/treeio/src/R/method-drop-tip.R
+  root.treedata <- function(phy, outgroup, node = NULL, edgelabel = TRUE, ...){
+    if (!missing(outgroup) && is.character(outgroup)){
+      outgroup <- match(outgroup, phy@phylo$tip.label)
+    }
+    if (!edgelabel){
+      ## warning message
+      message("The use of this method may cause some node data to become incorrect (e.g. bootstrap values) if 'edgelabel' is FALSE.")
+    }
+    #object <- phy
+    # generate node old label and new label map table.
+    res <- build_new_labels(tree=phy)
+    tree <- res$tree
+    node2oldnewlab <- res$node2old_new_lab
+    # reroot tree
+    re_tree <- root(tree, outgroup = outgroup, node = node,
+                    edgelabel = edgelabel, ...)
+    
+    node_map <- old_new_node_mapping(tree, re_tree)
+    n.tips <- Ntip(re_tree)
+    
+    # replace new label with old label
+    phy@phylo <- build_new_tree(tree=re_tree, node2old_new_lab=node2oldnewlab)
+    
+    # update data or extraInfo function
+    update_data <- function(data, node_map) {
+      cn <- colnames(data)
+      cn <- cn[cn != "node"]
+      data <- dplyr::inner_join(data, node_map, by=c("node"="old")) %>%
+        dplyr::select(c("new", cn)) %>% 
+        dplyr::rename(node=.data$new)
+      
+      # clear root data
+      root <- data$node == (n.tips + 1)
+      data[root,] <- NA
+      data[root,'node'] <- n.tips + 1
+      return(data)
+    }
+    if (nrow(phy@data) > 0) {
+      phy@data <- update_data(phy@data, node_map)
+    }    
+    if (nrow(phy@extraInfo) > 0){
+      phy@extraInfo <- update_data(phy@extraInfo, node_map)
+    }
+    
+    return(phy)
+  }
   
+  old_new_node_mapping <- function(oldtree, newtree){
+    treelab1 <- oldtree %>% 
+      as_tibble() %>%
+      dplyr::select(c("node", "label"))
+    treelab2 <- newtree %>% 
+      as_tibble() %>%
+      dplyr::select(c("node", "label"))
+    node_map <- dplyr::inner_join(treelab1, treelab2, by="label") %>%
+      dplyr::select(c("node.x", "node.y")) %>%
+      dplyr::rename(c(old="node.x", new="node.y"))
+    return(node_map)
+  }
+  
+  build_new_labels <- function(tree){
+    node2label_old <- tree %>% as_tibble() %>% dplyr::select(c("node", "label")) 
+    if (inherits(tree, "treedata")){
+      tree <- tree@phylo
+    }
+    tree$tip.label <- paste0("t", seq_len(Ntip(tree)))
+    tree$node.label <- paste0("n", seq_len(Nnode(tree)))
+    node2label_new <- tree %>% as_tibble() %>% dplyr::select(c("node", "label")) 
+    old_and_new <- node2label_old %>% 
+      dplyr::inner_join(node2label_new, by="node") %>%
+      dplyr::rename(old="label.x", new="label.y") 
+    return (list(tree=tree, node2old_new_lab=old_and_new))
+  }
+  
+  build_new_tree <- function(tree, node2old_new_lab){
+    # replace new label with old label
+    treeda <- tree %>% as_tibble()
+    treeda1 <- treeda %>%
+      dplyr::filter(.data$label %in% node2old_new_lab$new)
+    treeda2 <- treeda %>%
+      dplyr::filter(!(.data$label %in% node2old_new_lab$new))
+    # original label
+    treeda1$label <- node2old_new_lab[match(treeda1$label, node2old_new_lab$new), "old"] %>%
+      unlist(use.names=FALSE)
+    treeda <- rbind(treeda1, treeda2)
+    tree <- treeda[order(treeda$node),] %>% as.phylo() 
+    return (tree)
+  }
+  
+  
+  ## Handle node support values for non-ASTRAL trees
+  stopifnot(inherits(treedata, "treedata"))
+  astral <- all(pievars %in% colnames(treedata@data)) # guess if it's an ASTRAL tree
+  
+  # make support values (node label) numeric 
   if (!astral & is.character(treedata@phylo$node.label)) {
     treedata@phylo$node.label <- suppressWarnings(as.numeric(treedata@phylo$node.label))
   }
+  
+  # transfer support values (node label) to treedata@data
   if (!astral & !supportvar %in% names(treedata@data)) {
     support <- treedata@phylo$node.label
     node <- ggtree(treedata)$data[!ggtree(treedata)$data$label %in% treedata@phylo$tip.label,c("node")]
     treedata@data <- tidytree::tibble(support = support, node)
-    # if (identical(Nnode(treedata), nrow(treedata@data))) {
-    #   treedata@data <- tidytree::tibble(support = treedata@phylo$node.label, treedata@data[,"node"])
-    # } else {
-    #   treedata@data <- tidytree::tibble(support = treedata@phylo$node.label, rbind(tidytree::tibble(node = NA), treedata@data[,"node"]))
-    # }
   }
   
-  tl <- treedata@phylo$tip.label
+  
+  ## Create plot-related data.frames
+  # data.frame of node labels (support values / ASTRAL pies) -> dn
   dn <- if (astral) {
     data.frame(treedata@data[,c(supportvar, pievars, "node")])
   } else {
     if (identical(Nnode(treedata), nrow(treedata@data))) {
       data.frame(treedata@data[,c(supportvar, "node")])
     } else {
+      # experimental, please check
       data.frame(rbind(tidytree::tibble(s = NA, node = NA) %>% 
                          tidytree::rename(!!supportvar := s),
                        treedata@data[,c(supportvar, "node"),drop=F]))
     }
   }
   
+  # data.frame of tips -> dt
+  tl <- treedata@phylo$tip.label
   if (is.null(dt)) {
     dt <- data.frame(color = rep(col.tip, Ntip(treedata@phylo)),
                      label = tl)
@@ -86,27 +185,40 @@ plot.treedata <- function(
     }
   }
   
-  ## Check input
-  stopifnot(all.equal(Nnode(treedata), nrow(dn)),
-            all.equal(Ntip(treedata), nrow(dt)))
+  ## Re-root tree if indicated
+  if (root & !is.null(outgroup)) {
+    treedata <- root.treedata(phy = treedata, outgroup = outgroup, edgelabel = TRUE)
+  }
+  
+  ## Check (gives FALSE if ATRAL trees are rooted using root.treedata())
+  # stopifnot(all.equal(Nnode(treedata), nrow(dn)),
+  #           all.equal(Ntip(treedata), nrow(dt)))
   
   ## Add branch lengths
+  # treedata@phylo$edge.length[is.nan(treedata@phylo$edge.length)] <- 0
+  
   # if the root is resolved, the rooted ASTRAL tree has zero branch length for the outgroup
   p <- treedata@phylo
-  rn <- which(p$edge[,1] == rootnode(treedata) & p$edge[,2] == Ntip(p) + Nnode(p))
-  if (length(rn) != 0) {
-    if (treedata@phylo$edge.length[rn] == 0) {
-      if (verbose) cat("adding root.add =", root.add, 
-                       "branch units to the root, which has zero branch length\n")
-      treedata@phylo$edge.length[rn] <- root.add
-    }
+  
+  # OLD WAY
+  # rn <- which(p$edge[,1] == rootnode(treedata) & p$edge[,2] == Ntip(p) + Nnode(p))
+  
+  rn.idx <- which(p$edge[,1] == rootnode(treedata)) # check: gives more than 1?
+  rn <- rn.idx[is.nan(treedata@phylo$edge.length[rn.idx])]
+  
+  if (length(rn) > 0) {
+    if (verbose) cat("adding root.add =", root.add, 
+                     "branch units to the root, which has zero branch length\n")
+    treedata@phylo$edge.length[rn] <- root.add
   }
   
   # raw ASTRAL output has no edge.length on tips
-  if (sum(is.nan(treedata@phylo$edge.length)) == Ntip(treedata)) {
+  tn <- which(is.nan(treedata@phylo$edge.length))
+  
+  if (length(tn) > 0) {
     if (verbose) cat("adding tip.add =", tip.add, 
                      "branch units to tips, which have zero branch length\n")
-    treedata@phylo$edge.length[is.nan(treedata@phylo$edge.length)] <- tip.add
+    treedata@phylo$edge.length[tn] <- tip.add
   }
   
   ## Assing tip labels
@@ -144,12 +256,15 @@ plot.treedata <- function(
   if (add.support) {
     support.multiplyer <- if (astral) 100 else 1
     
+    # classify support values using supportbreaks and supportlabs
     gg$data <- gg$data %>%
-      tidytree::mutate(labelclass = c(
-        factor(rep(NA, nrow(gg$data)-nrow(dn)), levels = supportlabs),
-        cut(support.multiplyer*dn[,supportvar],
-            breaks = supportbreaks, labels = supportlabs, right = FALSE)))
+      tidytree::mutate(labelclass =
+        factor(
+          cut(support.multiplyer*gg$data[[supportvar]],
+              breaks = supportbreaks, labels = supportlabs, right = FALSE),
+          levels = supportlabs))
     
+    # plot support values
     gg <- gg +
       geom_nodepoint(aes(fill = labelclass), shape = 21, size = size.support,
                      alpha = alpha.support) +
@@ -163,5 +278,3 @@ plot.treedata <- function(
   ## Return
   invisible(gg)
 }
-
-save(plot.treedata, file = "plot.treedata.rda")
