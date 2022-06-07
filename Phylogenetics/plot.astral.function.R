@@ -1,3 +1,97 @@
+## Define root.treedata helper functions by Guangchuang Yu
+# https://rdrr.io/github/GuangchuangYu/treeio/src/R/utilities.R
+# https://rdrr.io/github/YuLab-SMU/treeio/src/R/method-drop-tip.R
+root.treedata <- function(phy, outgroup, node = NULL, edgelabel = TRUE, ...){
+  # helpers
+  old_new_node_mapping <- function(oldtree, newtree){
+    treelab1 <- oldtree %>% 
+      as_tibble() %>%
+      dplyr::select(c("node", "label"))
+    treelab2 <- newtree %>% 
+      as_tibble() %>%
+      dplyr::select(c("node", "label"))
+    node_map <- dplyr::inner_join(treelab1, treelab2, by="label") %>%
+      dplyr::select(c("node.x", "node.y")) %>%
+      dplyr::rename(c(old="node.x", new="node.y"))
+    return(node_map)
+  }
+  
+  build_new_labels <- function(tree){
+    node2label_old <- tree %>% as_tibble() %>% dplyr::select(c("node", "label")) 
+    if (inherits(tree, "treedata")){
+      tree <- tree@phylo
+    }
+    tree$tip.label <- paste0("t", seq_len(Ntip(tree)))
+    tree$node.label <- paste0("n", seq_len(Nnode(tree)))
+    node2label_new <- tree %>% as_tibble() %>% dplyr::select(c("node", "label")) 
+    old_and_new <- node2label_old %>% 
+      dplyr::inner_join(node2label_new, by="node") %>%
+      dplyr::rename(old="label.x", new="label.y") 
+    return (list(tree=tree, node2old_new_lab=old_and_new))
+  }
+  
+  build_new_tree <- function(tree, node2old_new_lab){
+    # replace new label with old label
+    treeda <- tree %>% as_tibble()
+    treeda1 <- treeda %>%
+      dplyr::filter(.data$label %in% node2old_new_lab$new)
+    treeda2 <- treeda %>%
+      dplyr::filter(!(.data$label %in% node2old_new_lab$new))
+    # original label
+    treeda1$label <- node2old_new_lab[match(treeda1$label, node2old_new_lab$new), "old"] %>%
+      unlist(use.names=FALSE)
+    treeda <- rbind(treeda1, treeda2)
+    tree <- treeda[order(treeda$node),] %>% as.phylo() 
+    return (tree)
+  }
+  
+  # root
+  if (!missing(outgroup) && is.character(outgroup)){
+    outgroup <- match(outgroup, phy@phylo$tip.label)
+  }
+  if (!edgelabel){
+    ## warning message
+    message("The use of this method may cause some node data to become incorrect (e.g. bootstrap values) if 'edgelabel' is FALSE.")
+  }
+  #object <- phy
+  # generate node old label and new label map table.
+  res <- build_new_labels(tree=phy)
+  tree <- res$tree
+  node2oldnewlab <- res$node2old_new_lab
+  # reroot tree
+  re_tree <- root(tree, outgroup = outgroup, node = node,
+                  edgelabel = edgelabel, ...)
+  
+  node_map <- old_new_node_mapping(tree, re_tree)
+  n.tips <- Ntip(re_tree)
+  
+  # replace new label with old label
+  phy@phylo <- build_new_tree(tree=re_tree, node2old_new_lab=node2oldnewlab)
+  
+  # update data or extraInfo function
+  update_data <- function(data, node_map) {
+    cn <- colnames(data)
+    cn <- cn[cn != "node"]
+    data <- dplyr::inner_join(data, node_map, by=c("node"="old")) %>%
+      dplyr::select(c("new", cn)) %>% 
+      dplyr::rename(node=.data$new)
+      
+    # clear root data
+    root <- data$node == (n.tips + 1)
+    data[root,] <- NA
+    data[root,'node'] <- n.tips + 1
+    return(data)
+  }
+  if (nrow(phy@data) > 0) {
+    phy@data <- update_data(phy@data, node_map)
+  }    
+  if (nrow(phy@extraInfo) > 0){
+    phy@extraInfo <- update_data(phy@extraInfo, node_map)
+  }
+  
+  return(phy)
+}
+  
 ## plot.treedata
 # ## debug
 # dt = NULL; astral = TRUE; ladderize = TRUE; print = TRUE; verbose = TRUE;
@@ -187,6 +281,7 @@ plot.treedata <- function(
   
   ## Re-root tree if indicated
   if (root & !is.null(outgroup)) {
+    # message("rooting tree")
     treedata <- root.treedata(phy = treedata, outgroup = outgroup, edgelabel = TRUE)
   }
   
@@ -200,9 +295,7 @@ plot.treedata <- function(
   # if the root is resolved, the rooted ASTRAL tree has zero branch length for the outgroup
   p <- treedata@phylo
   
-  # OLD WAY
-  # rn <- which(p$edge[,1] == rootnode(treedata) & p$edge[,2] == Ntip(p) + Nnode(p))
-  
+  # rn.idx <- which(p$edge[,1] == rootnode(treedata) & p$edge[,2] == Ntip(p) + Nnode(p)) # wrong?
   rn.idx <- which(p$edge[,1] == rootnode(treedata)) # check: gives more than 1?
   rn <- rn.idx[is.nan(treedata@phylo$edge.length[rn.idx])]
   
@@ -240,16 +333,14 @@ plot.treedata <- function(
   total.width <- xlims+xmax*xlims
   
   gg <- gg + ggplot2::xlim(0, total.width)
-  
+
   ## Create ASTRAL pies
   if (astral & add.pies) {
     pies <- nodepie(dn, cols = pievars, alpha = alpha.pie)
-    
     pies <- lapply(pies, function(g) g + scale_fill_manual(values = piecols))
     gg <- suppressWarnings(
       gg + geom_inset(pies, width = width.pie, height = height.pie, 
-                      hjust = hjust.pie, vjust = vjust.pie) 
-    )
+                      hjust = hjust.pie, vjust = vjust.pie))
   }
   
   ## Map support values onto phylogeny
@@ -274,7 +365,10 @@ plot.treedata <- function(
   
   ## Print
   if (print) print(gg)
-  
+
   ## Return
   invisible(gg)
 }
+
+save(plot.treedata, file = "plot.treedata.rda")
+
