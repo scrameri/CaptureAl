@@ -2,7 +2,7 @@
 Bioinformatic pipeline streamlining analysis of **target enrichment sequencing** data.
 
 ## Context
-This repository accompanies a paper ([Crameri et al. (2022) Mol Ecol Res](https://doi.org/10.1111/1755-0998.13666)), also available [here](https://www.biorxiv.org/content/10.1101/2021.12.07.471551v1).
+This repository accompanies the paper: [Crameri S., Fior, S., Zoller, S. & Widmer, A. (2022) A target capture approach for phylogenomic analyses at multiple evolutionary timescales in rosewoods (*Dalbergia* spp.) and the legume family (Fabaceae). *Molecular Ecology Resources*.](https://doi.org/10.1111/1755-0998.13666).
 
 ## Before you start
 1) Download/Clone the [CaptureAl repository](https://github.com/scrameri/CaptureAl) 
