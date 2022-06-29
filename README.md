@@ -3,7 +3,7 @@ Bioinformatic pipeline streamlining analysis of **target enrichment sequencing**
 
 ## How to Cite
 Please cite the following paper when using CaptureAl in published work:
-- [Crameri S., Fior S., Zoller S. & Widmer A. (2022) A target capture approach for phylogenomic analyses at multiple evolutionary timescales in rosewoods (*Dalbergia* spp.) and the legume family (Fabaceae). *Molecular Ecology Resources*.](https://doi.org/10.1111/1755-0998.13666)
+- [Crameri S., Fior S., Zoller S. & Widmer A. (2022) A target capture approach for phylogenomic analyses at multiple evolutionary timescales in rosewoods (*Dalbergia* spp.) and the legume family (Fabaceae). *Molecular Ecology Resources* 00, 1-19.](https://doi.org/10.1111/1755-0998.13666)
 
 ## Before you start
 1) Download/Clone the [CaptureAl repository](https://github.com/scrameri/CaptureAl) 
